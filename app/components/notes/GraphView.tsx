@@ -54,8 +54,9 @@ export default function GraphView({ notes, onNodeClick }:
                     const options = { nodes: { shape: 'dot', size: 10 }, edges: { arrows: 'to' }, physics: { stabilization: true } }
                     const network = new NetworkCtor(container, data, options)
 
-                    network.on('click', (params: { nodes?: string[] }) => {
-                        if (params.nodes && params.nodes.length) onNodeClick(params.nodes[0])
+                    network.on('click', (params: unknown) => {
+                        const clickParams = params as { nodes?: string[] }
+                        if (clickParams.nodes && clickParams.nodes.length) onNodeClick(clickParams.nodes[0])
                     })
                 } catch (err) {
                     console.error('Error loading vis-network', err)
