@@ -27,7 +27,7 @@ const fadeUp = {
 };
 
 const skills = {
-    backend: ['Java', 'Spring Boot', 'Kotlin', 'APIs', 'Architecture'],
+    backend: ['Java', 'Spring Boot', 'Golang', 'Gin', 'APIs', 'Architecture'],
     frontend: ['TypeScript', 'React', 'Next.js', 'Tailwind CSS', 'UI/UX'],
     devopsTools: ['Docker', 'Kubernetes', 'Grafana', 'Ansible', 'Linux', 'Shell Script'],
 };
@@ -145,11 +145,10 @@ export default function PortfolioHome() {
     return (
         <main className={`relative min-h-screen overflow-x-clip ${isDark ? 'bg-[#07090d] text-zinc-100' : 'bg-[#f3f6fb] text-zinc-900'}`}>
             <div
-                className={`pointer-events-none absolute inset-0 ${
-                    isDark
+                className={`pointer-events-none absolute inset-0 ${isDark
                         ? 'bg-[radial-gradient(circle_at_18%_16%,rgba(35,82,138,0.35),transparent_40%),radial-gradient(circle_at_78%_0%,rgba(15,78,53,0.25),transparent_35%),linear-gradient(180deg,#07090d_0%,#07090d_50%,#05070a_100%)]'
                         : 'bg-[radial-gradient(circle_at_15%_10%,rgba(59,130,246,0.18),transparent_42%),radial-gradient(circle_at_80%_0%,rgba(16,185,129,0.16),transparent_36%),linear-gradient(180deg,#f3f6fb_0%,#eef3f9_45%,#f8fbff_100%)]'
-                }`}
+                    }`}
             />
 
             <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-20 px-6 pb-16 pt-10 sm:px-10 sm:pt-14 lg:gap-24 lg:px-12">
@@ -164,11 +163,10 @@ export default function PortfolioHome() {
                             },
                         },
                     }}
-                    className={`rounded-3xl border p-6 backdrop-blur sm:p-10 ${
-                        isDark
+                    className={`rounded-3xl border p-6 backdrop-blur sm:p-10 ${isDark
                             ? 'border-zinc-800/80 bg-zinc-950/60 shadow-[0_0_0_1px_rgba(255,255,255,0.02),0_30px_80px_rgba(0,0,0,0.45)]'
                             : 'border-zinc-200 bg-white/75 shadow-[0_12px_45px_rgba(15,23,42,0.10)]'
-                    }`}
+                        }`}
                 >
                     <motion.div variants={fadeUp} className="flex items-center justify-between">
                         <span className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs ${chipClass}`}>
@@ -180,11 +178,10 @@ export default function PortfolioHome() {
                                 href="https://github.com/nickolss"
                                 target="_blank"
                                 rel="noreferrer"
-                                className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs transition ${
-                                    isDark
+                                className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs transition ${isDark
                                         ? 'border-zinc-800 text-zinc-300 hover:border-zinc-600 hover:text-zinc-100'
                                         : 'border-zinc-200 text-zinc-700 hover:border-zinc-400 hover:text-zinc-900'
-                                }`}
+                                    }`}
                             >
                                 <Code2 className="h-3.5 w-3.5" />
                                 github.com/nickolss
@@ -193,11 +190,10 @@ export default function PortfolioHome() {
                                 type="button"
                                 aria-label="Toggle theme"
                                 onClick={() => setTheme(isDark ? 'light' : 'dark')}
-                                className={`inline-flex h-8 w-8 items-center justify-center rounded-full border transition ${
-                                    isDark
+                                className={`inline-flex h-8 w-8 items-center justify-center rounded-full border transition ${isDark
                                         ? 'border-zinc-800 bg-zinc-900/80 text-zinc-200 hover:border-zinc-600'
                                         : 'border-zinc-200 bg-white text-zinc-700 hover:border-zinc-400'
-                                }`}
+                                    }`}
                             >
                                 {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                             </button>
@@ -213,18 +209,16 @@ export default function PortfolioHome() {
 
                     <motion.h1
                         variants={fadeUp}
-                        className={`mt-3 max-w-4xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:text-6xl ${
-                            isDark ? 'text-zinc-50' : 'text-zinc-950'
-                        }`}
+                        className={`mt-3 max-w-4xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:text-6xl ${isDark ? 'text-zinc-50' : 'text-zinc-950'
+                            }`}
                     >
                         Fullstack Developer
                         <br />
                         <span
-                            className={`bg-clip-text text-transparent ${
-                                isDark
+                            className={`bg-clip-text text-transparent ${isDark
                                     ? 'bg-gradient-to-r from-zinc-100 via-sky-200 to-emerald-200'
                                     : 'bg-gradient-to-r from-zinc-900 via-sky-700 to-emerald-700'
-                            }`}
+                                }`}
                         >
                             with a DevOps Mindset
                         </span>
@@ -269,7 +263,7 @@ export default function PortfolioHome() {
                         },
                     }}
                 >
-                      <SectionTitle eyebrow="Capabilities" title="Skills" isDark={isDark} />
+                    <SectionTitle eyebrow="Capabilities" title="Skills" isDark={isDark} />
                     <div className="grid gap-4 md:grid-cols-3">
                         <motion.article variants={fadeUp} className={`rounded-2xl border p-5 ${cardClass}`}>
                             <div className={`mb-4 inline-flex rounded-lg border p-2 ${chipClass}`}>
@@ -281,9 +275,8 @@ export default function PortfolioHome() {
                                 {skills.backend.map((skill) => (
                                     <span
                                         key={skill}
-                                        className={`rounded-md px-2.5 py-1 text-xs ${
-                                            isDark ? 'bg-zinc-900 text-zinc-300' : 'bg-zinc-100 text-zinc-700'
-                                        }`}
+                                        className={`rounded-md px-2.5 py-1 text-xs ${isDark ? 'bg-zinc-900 text-zinc-300' : 'bg-zinc-100 text-zinc-700'
+                                            }`}
                                     >
                                         {skill}
                                     </span>
@@ -301,9 +294,8 @@ export default function PortfolioHome() {
                                 {skills.frontend.map((skill) => (
                                     <span
                                         key={skill}
-                                        className={`rounded-md px-2.5 py-1 text-xs ${
-                                            isDark ? 'bg-zinc-900 text-zinc-300' : 'bg-zinc-100 text-zinc-700'
-                                        }`}
+                                        className={`rounded-md px-2.5 py-1 text-xs ${isDark ? 'bg-zinc-900 text-zinc-300' : 'bg-zinc-100 text-zinc-700'
+                                            }`}
                                     >
                                         {skill}
                                     </span>
@@ -321,9 +313,8 @@ export default function PortfolioHome() {
                                 {skills.devopsTools.map((skill) => (
                                     <span
                                         key={skill}
-                                        className={`rounded-md px-2.5 py-1 text-xs ${
-                                            isDark ? 'bg-zinc-900 text-zinc-300' : 'bg-zinc-100 text-zinc-700'
-                                        }`}
+                                        className={`rounded-md px-2.5 py-1 text-xs ${isDark ? 'bg-zinc-900 text-zinc-300' : 'bg-zinc-100 text-zinc-700'
+                                            }`}
                                     >
                                         {skill}
                                     </span>
@@ -346,7 +337,7 @@ export default function PortfolioHome() {
                         },
                     }}
                 >
-                      <SectionTitle eyebrow="Learning Track" title="DevOps Focus" isDark={isDark} />
+                    <SectionTitle eyebrow="Learning Track" title="DevOps Focus" isDark={isDark} />
                     <div className="grid gap-4 md:grid-cols-3">
                         <motion.article variants={fadeUp} className={`rounded-2xl border p-5 ${cardClass}`}>
                             <div className={`mb-4 inline-flex rounded-lg border p-2 ${chipClass}`}>
@@ -387,7 +378,7 @@ export default function PortfolioHome() {
                         },
                     }}
                 >
-                      <SectionTitle eyebrow="Selected Work" title="Project Bento Grid" isDark={isDark} />
+                    <SectionTitle eyebrow="Selected Work" title="Projects" isDark={isDark} />
 
                     <div className="grid gap-4 md:grid-cols-3">
                         {projects.map((project) => {
@@ -399,18 +390,16 @@ export default function PortfolioHome() {
                                     href={project.href}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className={`group relative overflow-hidden rounded-2xl border p-5 transition ${project.span} ${
-                                        isDark
+                                    className={`group relative overflow-hidden rounded-2xl border p-5 transition ${project.span} ${isDark
                                             ? 'border-zinc-800 bg-zinc-950/70 hover:border-zinc-700 hover:bg-zinc-900/70'
                                             : 'border-zinc-200 bg-white/85 hover:border-zinc-300 hover:bg-white'
-                                    }`}
+                                        }`}
                                 >
                                     <div
-                                        className={`mb-4 inline-flex rounded-lg border p-2 transition ${
-                                            isDark
+                                        className={`mb-4 inline-flex rounded-lg border p-2 transition ${isDark
                                                 ? 'border-zinc-800 bg-zinc-900/80 group-hover:border-zinc-700'
                                                 : 'border-zinc-200 bg-zinc-50 group-hover:border-zinc-300'
-                                        }`}
+                                            }`}
                                     >
                                         <Icon className={`h-4 w-4 ${isDark ? 'text-zinc-200' : 'text-zinc-700'}`} />
                                     </div>
