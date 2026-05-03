@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Note, loadNotes, saveNotes, createNote, deleteNote, importNotes, exportNotes } from '../../../lib/zkStorage'
+import { Note, normalizeImportedNotes, exportNotes } from '../../../lib/zkStorage'
 import NotesList from './NotesList'
 import NoteEditor from './NoteEditor'
 import NoteViewer from './NoteViewer'
@@ -9,55 +9,106 @@ import GraphView from './GraphView'
 import './notes.css'
 
 export default function NotesApp() {
-  const [notes, setNotes] = useState<Note[]>(() => loadNotes()) 
+  const [notes, setNotes] = useState<Note[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [isGraphOpen, setIsGraphOpen] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(() => {
-    if (typeof window === 'undefined') return false
+  const [isLoading, setIsLoading] = useState(true)
+  const [isAdmin, setIsAdmin] = useState(false)
+
+  async function loadNotesFromApi() {
+    setIsLoading(true)
     try {
-      return sessionStorage.getItem('zk_admin_session') === '1'
-    } catch {
-      return false
+      const res = await fetch('/api/notes', { cache: 'no-store' })
+      if (!res.ok) throw new Error('Erro ao carregar notas')
+      const data = (await res.json()) as Note[]
+      setNotes(data)
+      if (data.length > 0) {
+        setSelectedId((prev) => prev ?? data[0].id)
+      }
+    } catch (err) {
+      console.error(err)
+      alert('Nao foi possivel carregar as notas no banco.')
+    } finally {
+      setIsLoading(false)
     }
-  })
+  }
 
   useEffect(() => {
-    saveNotes(notes)
-  }, [notes])
+    loadNotesFromApi()
+  }, [])
 
-  function handleCreate() {
+  useEffect(() => {
+    try {
+      setIsAdmin(sessionStorage.getItem('zk_admin_session') === '1')
+    } catch {
+      setIsAdmin(false)
+    }
+  }, [])
+
+  async function handleCreate() {
     if (!isAdmin) return
-    const n = createNote()
-    setNotes(prev => [n, ...prev])
-    setEditingId(n.id)
-    setSelectedId(n.id)
+    try {
+      const res = await fetch('/api/notes', { method: 'POST' })
+      if (!res.ok) throw new Error('Erro ao criar nota')
+      const n = (await res.json()) as Note
+      setNotes(prev => [n, ...prev])
+      setEditingId(n.id)
+      setSelectedId(n.id)
+    } catch (err) {
+      console.error(err)
+      alert('Nao foi possivel criar a nota.')
+    }
   }
 
-  function handleSave(updated: Note) {
+  async function handleSave(updated: Note) {
     if (!isAdmin) return
-    setNotes(prev => prev.map(n => n.id === updated.id ? updated : n))
-    setEditingId(null)
-    setSelectedId(updated.id)
+    try {
+      const res = await fetch(`/api/notes/${updated.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated),
+      })
+      if (!res.ok) throw new Error('Erro ao salvar nota')
+      const saved = (await res.json()) as Note
+      setNotes(prev => prev.map(n => n.id === saved.id ? saved : n))
+      setEditingId(null)
+      setSelectedId(saved.id)
+    } catch (err) {
+      console.error(err)
+      alert('Nao foi possivel salvar a nota.')
+    }
   }
 
-  function handleDelete(id: string) {
+  async function handleDelete(id: string) {
     if (!isAdmin) return
     if (!confirm('Excluir nota?')) return
-    deleteNote(id)
-    setNotes(prev => prev.filter(n => n.id !== id))
-    setSelectedId(null)
-    setEditingId(null)
+    try {
+      const res = await fetch(`/api/notes/${id}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error('Erro ao excluir nota')
+      setNotes(prev => prev.filter(n => n.id !== id))
+      setSelectedId(null)
+      setEditingId(null)
+    } catch (err) {
+      console.error(err)
+      alert('Nao foi possivel excluir a nota.')
+    }
   }
 
   function handleImport(file: File) {
     if (!isAdmin) return
     const reader = new FileReader()
-    reader.onload = () => {
+    reader.onload = async () => {
       try {
         const parsed = JSON.parse(String(reader.result))
-        importNotes(parsed)
-        setNotes(loadNotes())
+        const normalized = normalizeImportedNotes(parsed)
+        const res = await fetch('/api/notes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ notes: normalized }),
+        })
+        if (!res.ok) throw new Error('Erro ao importar notas')
+        await loadNotesFromApi()
         alert('Importado com sucesso')
       } catch {
         alert('Erro ao importar')
@@ -180,7 +231,12 @@ export default function NotesApp() {
         </aside>
 
         <section className="zk-panel zk-content">
-          {isAdmin && editingId && activeNote ? (
+          {isLoading ? (
+            <div className="zk-empty">
+              <h2>Carregando notas</h2>
+              <p>Aguarde enquanto buscamos suas notas no banco.</p>
+            </div>
+          ) : isAdmin && editingId && activeNote ? (
             <NoteEditor note={activeNote} onSave={handleSave} onCancel={() => setEditingId(null)} />
           ) : selectedId && activeNote ? (
             <NoteViewer note={activeNote} onEdit={() => setEditingId(selectedId)} onDelete={() => handleDelete(selectedId!)} canManage={isAdmin} />
