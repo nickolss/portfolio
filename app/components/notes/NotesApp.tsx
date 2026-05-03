@@ -20,7 +20,7 @@ export default function NotesApp() {
     setIsLoading(true)
     try {
       const res = await fetch('/api/notes', { cache: 'no-store' })
-      if (!res.ok) throw new Error('Erro ao carregar notas')
+      if (!res.ok) throw new Error('Failed to load notes')
       const data = (await res.json()) as Note[]
       setNotes(data)
       if (data.length > 0) {
@@ -28,7 +28,7 @@ export default function NotesApp() {
       }
     } catch (err) {
       console.error(err)
-      alert('Nao foi possivel carregar as notas no banco.')
+      alert('Could not load notes from the database.')
     } finally {
       setIsLoading(false)
     }
@@ -50,14 +50,14 @@ export default function NotesApp() {
     if (!isAdmin) return
     try {
       const res = await fetch('/api/notes', { method: 'POST' })
-      if (!res.ok) throw new Error('Erro ao criar nota')
+      if (!res.ok) throw new Error('Failed to create note')
       const n = (await res.json()) as Note
       setNotes(prev => [n, ...prev])
       setEditingId(n.id)
       setSelectedId(n.id)
     } catch (err) {
       console.error(err)
-      alert('Nao foi possivel criar a nota.')
+      alert('Could not create the note.')
     }
   }
 
@@ -69,29 +69,29 @@ export default function NotesApp() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updated),
       })
-      if (!res.ok) throw new Error('Erro ao salvar nota')
+      if (!res.ok) throw new Error('Failed to save note')
       const saved = (await res.json()) as Note
       setNotes(prev => prev.map(n => n.id === saved.id ? saved : n))
       setEditingId(null)
       setSelectedId(saved.id)
     } catch (err) {
       console.error(err)
-      alert('Nao foi possivel salvar a nota.')
+      alert('Could not save the note.')
     }
   }
 
   async function handleDelete(id: string) {
     if (!isAdmin) return
-    if (!confirm('Excluir nota?')) return
+    if (!confirm('Delete note?')) return
     try {
       const res = await fetch(`/api/notes/${id}`, { method: 'DELETE' })
-      if (!res.ok) throw new Error('Erro ao excluir nota')
+      if (!res.ok) throw new Error('Failed to delete note')
       setNotes(prev => prev.filter(n => n.id !== id))
       setSelectedId(null)
       setEditingId(null)
     } catch (err) {
       console.error(err)
-      alert('Nao foi possivel excluir a nota.')
+      alert('Could not delete the note.')
     }
   }
 
@@ -107,11 +107,11 @@ export default function NotesApp() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ notes: normalized }),
         })
-        if (!res.ok) throw new Error('Erro ao importar notas')
+        if (!res.ok) throw new Error('Failed to import notes')
         await loadNotesFromApi()
-        alert('Importado com sucesso')
+        alert('Imported successfully')
       } catch {
-        alert('Erro ao importar')
+        alert('Import failed')
       }
     }
     reader.readAsText(file)
@@ -125,17 +125,17 @@ export default function NotesApp() {
   function handleAdminLogin() {
     const configuredPassword = process.env.NEXT_PUBLIC_NOTES_ADMIN_PASSWORD
     if (!configuredPassword) {
-      alert('Defina NEXT_PUBLIC_NOTES_ADMIN_PASSWORD no ambiente para habilitar login de administrador.')
+      alert('Set NEXT_PUBLIC_NOTES_ADMIN_PASSWORD in your environment to enable admin login.')
       return
     }
-    const typed = prompt('Senha de administrador')
+    const typed = prompt('Admin password')
     if (typed && typed === configuredPassword) {
       sessionStorage.setItem('zk_admin_session', '1')
       setIsAdmin(true)
-      alert('Modo administrador habilitado.')
+      alert('Admin mode enabled.')
       return
     }
-    alert('Senha inválida.')
+    alert('Invalid password.')
   }
 
   function handleAdminLogout() {
@@ -156,9 +156,9 @@ export default function NotesApp() {
         <div className="zk-hero-top">
           <div>
             <p className="zk-eyebrow">Knowledge network</p>
-            <h1>Zettelkasten — Notas</h1>
+            <h1>Zettelkasten — Notes</h1>
             <p className="zk-subtitle">
-              Crie notas atômicas, conecte conceitos com links internos e acompanhe a rede de conhecimento no grafo.
+              Create atomic notes, connect concepts with internal links, and explore your knowledge network in the graph.
             </p>
           </div>
 
@@ -166,10 +166,10 @@ export default function NotesApp() {
             <Link href="/" className="zk-link-pill">Home</Link>
             {isAdmin ? (
               <>
-                <button onClick={handleCreate} className="zk-primary">Nova nota</button>
-                <button onClick={handleExport} className="zk-secondary">Exportar JSON</button>
+                <button onClick={handleCreate} className="zk-primary">New note</button>
+                <button onClick={handleExport} className="zk-secondary">Export JSON</button>
                 <label className="zk-import zk-secondary">
-                  Importar
+                  Import
                   <input
                     type="file"
                     accept="application/json"
@@ -179,35 +179,35 @@ export default function NotesApp() {
                     }}
                   />
                 </label>
-                <button onClick={handleAdminLogout} className="zk-secondary">Sair do admin</button>
+                <button onClick={handleAdminLogout} className="zk-secondary">Exit admin</button>
               </>
             ) : (
-              <button onClick={handleAdminLogin} className="zk-primary">Entrar como admin</button>
+              <button onClick={handleAdminLogin} className="zk-primary">Login as admin</button>
             )}
             <button onClick={() => setIsGraphOpen(prev => !prev)} className="zk-secondary">
-              {isGraphOpen ? 'Ocultar grafo' : 'Abrir grafo'}
+              {isGraphOpen ? 'Hide graph' : 'Show graph'}
             </button>
           </div>
         </div>
 
         <div className="zk-hero-grid">
           <article className="zk-tutorial-card">
-            <span className="zk-card-label">Como usar</span>
+            <span className="zk-card-label">How to use</span>
             <ol className="zk-steps">
-              <li>1. Clique em “Nova nota” e escreva uma ideia única.</li>
-              <li>2. Para criar um link, digite <strong>[[slug-da-outra-nota]]</strong>.</li>
-              <li>3. Abra o grafo para ver as conexões entre as notas.</li>
+              <li>1. Click “New note” and write one atomic idea.</li>
+              <li>2. To link notes, type <strong>[[other-note-slug]]</strong>.</li>
+              <li>3. Open the graph to see connections between notes.</li>
             </ol>
           </article>
 
           <article className="zk-tutorial-card zk-tutorial-strong">
-            <span className="zk-card-label">Dica prática</span>
+            <span className="zk-card-label">Practical tip</span>
             <p>
-              Cada nota salva inclui um <strong>slug</strong> interno. Use esse slug dentro de <strong>[[ ]]</strong>
-              para referenciar outra nota. Exemplo: <code>[[react-hooks]]</code>.
+              Every saved note includes an internal <strong>slug</strong>. Use this slug inside <strong>[[ ]]</strong>
+              to reference another note. Example: <code>[[react-hooks]]</code>.
             </p>
             <p className="zk-tip-small">
-              Markdown funciona no editor e no preview. Você pode fazer listas, código, links e títulos.
+              Markdown works in both editor and preview. You can write lists, code blocks, links, and headings.
             </p>
           </article>
 
@@ -215,11 +215,11 @@ export default function NotesApp() {
             <span className="zk-card-label">Status</span>
             <div className="zk-stats-row">
               <strong>{notes.length}</strong>
-              <span>notas salvas</span>
+              <span>saved notes</span>
             </div>
             <div className="zk-stats-row">
-              <strong>{isAdmin ? 'Admin' : 'Leitura'}</strong>
-              <span>modo atual</span>
+              <strong>{isAdmin ? 'Admin' : 'Read-only'}</strong>
+              <span>current mode</span>
             </div>
           </article>
         </div>
@@ -233,8 +233,8 @@ export default function NotesApp() {
         <section className="zk-panel zk-content">
           {isLoading ? (
             <div className="zk-empty">
-              <h2>Carregando notas</h2>
-              <p>Aguarde enquanto buscamos suas notas no banco.</p>
+              <h2>Loading notes</h2>
+              <p>Please wait while we fetch your notes from the database.</p>
             </div>
           ) : isAdmin && editingId && activeNote ? (
             <NoteEditor note={activeNote} onSave={handleSave} onCancel={() => setEditingId(null)} />
@@ -242,8 +242,8 @@ export default function NotesApp() {
             <NoteViewer note={activeNote} onEdit={() => setEditingId(selectedId)} onDelete={() => handleDelete(selectedId!)} canManage={isAdmin} />
           ) : (
             <div className="zk-empty">
-              <h2>Comece por uma nota pequena</h2>
-              <p>Escreva um conceito, faça um link para outra nota com <strong>[[slug]]</strong> e veja a rede crescer.</p>
+              <h2>Start with a small note</h2>
+              <p>Write one concept, link to another note with <strong>[[slug]]</strong>, and watch your graph grow.</p>
             </div>
           )}
         </section>
@@ -252,8 +252,8 @@ export default function NotesApp() {
       {isGraphOpen && (
         <section className="zk-panel zk-graph-section">
           <div className="zk-graph-header">
-            <h2>Mapa de conexoes</h2>
-            <p>Clique em um no para abrir a nota conectada.</p>
+            <h2>Connection map</h2>
+            <p>Click a node to open the connected note.</p>
           </div>
           <GraphView notes={notes} onNodeClick={(id) => { setSelectedId(id); setEditingId(null); }} />
         </section>

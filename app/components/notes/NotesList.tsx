@@ -13,12 +13,12 @@ export default function NotesList({ notes, onSelect, onEdit, onDelete, selectedI
 
   return (
     <div className="zk-list">
-      <input placeholder="Procurar..." className="zk-search" onChange={() => { /* small enhancement later */ }} />
+      <input placeholder="Search..." className="zk-search" onChange={() => { /* small enhancement later */ }} />
       <ul>
         {notes.map(n => (
           <li key={n.id} className={n.id === selectedId ? 'selected' : ''}>
             <div className="zk-note-item" onClick={() => onSelect(n.id)}>
-              <strong>{n.title || 'Sem título'}</strong>
+              <strong>{n.title || 'Untitled'}</strong>
               <div className="zk-meta">{new Date(n.updatedAt).toLocaleString()}</div>
             </div>
             {canManage && (

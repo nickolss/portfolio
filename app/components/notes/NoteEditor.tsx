@@ -18,9 +18,9 @@ export default function NoteEditor({ note, onSave, onCancel }:
 
   return (
     <div className="zk-editor">
-      <input className="zk-title" value={title} onChange={e => setTitle(e.target.value)} placeholder="Título" />
+      <input className="zk-title" value={title} onChange={e => setTitle(e.target.value)} placeholder="Title" />
       <p className="zk-editor-hint">
-        Para referenciar esta nota em outra, use <code>[[{note.slug}]]</code>. O preview do editor mostra o Markdown em tempo real.
+        To reference this note elsewhere, use <code>[[{note.slug}]]</code>. The editor preview renders Markdown in real time.
       </p>
       <div className="zk-editor-modes">
         <button
@@ -28,14 +28,14 @@ export default function NoteEditor({ note, onSave, onCancel }:
           className={viewMode === 'write' ? 'active' : ''}
           onClick={() => setViewMode('write')}
         >
-          Escrever
+          Write
         </button>
         <button
           type="button"
           className={viewMode === 'split' ? 'active' : ''}
           onClick={() => setViewMode('split')}
         >
-          Dividido
+          Split
         </button>
         <button
           type="button"
@@ -51,19 +51,19 @@ export default function NoteEditor({ note, onSave, onCancel }:
             className={`zk-textarea ${viewMode === 'write' ? 'zk-editor-full' : ''}`}
             value={content}
             onChange={e => setContent(e.target.value)}
-            placeholder="# Minha nota"
+            placeholder="# My note"
           />
         )}
         {(viewMode === 'preview' || viewMode === 'split') && (
           <div className={`zk-preview zk-markdown ${viewMode === 'preview' ? 'zk-editor-full' : ''}`}>
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{content || '_Comece a escrever para ver o preview._'}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{content || '_Start writing to see the preview._'}</ReactMarkdown>
           </div>
         )}
       </div>
 
       <div className="zk-editor-actions">
-        <button onClick={save}>Salvar</button>
-        <button onClick={onCancel}>Cancelar</button>
+        <button onClick={save}>Save</button>
+        <button onClick={onCancel}>Cancel</button>
       </div>
     </div>
   )
