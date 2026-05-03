@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabaseAdmin } from '../../../lib/supabaseAdmin'
+import { getSupabaseAdmin } from '../../../lib/supabaseAdmin'
 import { slugify, uid, type Note } from '../../../lib/zkStorage'
 
 type NoteRow = {
@@ -23,6 +23,13 @@ function mapRowToNote(row: NoteRow): Note {
 }
 
 export async function GET() {
+  let supabaseAdmin
+  try {
+    supabaseAdmin = getSupabaseAdmin()
+  } catch (err) {
+    return NextResponse.json({ error: (err as Error).message }, { status: 500 })
+  }
+
   const { data, error } = await supabaseAdmin
     .from('zk_notes')
     .select('id,title,slug,content,created_at,updated_at')
@@ -36,6 +43,13 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  let supabaseAdmin
+  try {
+    supabaseAdmin = getSupabaseAdmin()
+  } catch (err) {
+    return NextResponse.json({ error: (err as Error).message }, { status: 500 })
+  }
+
   const body = await request.json().catch(() => ({}))
 
   // Import mode: replace all notes with provided payload.

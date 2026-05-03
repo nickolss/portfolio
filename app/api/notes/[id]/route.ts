@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabaseAdmin } from '../../../../lib/supabaseAdmin'
+import { getSupabaseAdmin } from '../../../../lib/supabaseAdmin'
 import { slugify, type Note } from '../../../../lib/zkStorage'
 
 type NoteRow = {
@@ -23,6 +23,13 @@ function mapRowToNote(row: NoteRow): Note {
 }
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  let supabaseAdmin
+  try {
+    supabaseAdmin = getSupabaseAdmin()
+  } catch (err) {
+    return NextResponse.json({ error: (err as Error).message }, { status: 500 })
+  }
+
   const { id } = await params
   const body = (await request.json()) as Note
 
@@ -49,6 +56,13 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 }
 
 export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
+  let supabaseAdmin
+  try {
+    supabaseAdmin = getSupabaseAdmin()
+  } catch (err) {
+    return NextResponse.json({ error: (err as Error).message }, { status: 500 })
+  }
+
   const { id } = await params
   const { error } = await supabaseAdmin.from('zk_notes').delete().eq('id', id)
 
