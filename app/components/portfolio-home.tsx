@@ -227,7 +227,7 @@ function SideRule({ side }: { side: 'left' | 'right' }) {
 function Label({ children }: { children: string }) {
     return (
         <motion.p variants={fadeUp} className="text-[11px] uppercase tracking-[0.18em] mb-5">
-            <span className="text-[#22d3ee]">// </span>
+            <span className="text-[#22d3ee]">{'// '}</span>
             <span className="text-[#3f3f46]">{children}</span>
         </motion.p>
     );
@@ -337,7 +337,7 @@ export default function PortfolioHome() {
                         {/* name */}
                         <div>
                             <div className="text-[10px] text-[#22d3ee] mb-2 tracking-widest uppercase">
-                                // dev
+                                {'// dev'}
                             </div>
                             <h1 className="text-3xl sm:text-4xl font-bold leading-none tracking-tight text-white">
                                 {T.h1[0]}
@@ -357,7 +357,7 @@ export default function PortfolioHome() {
 
                         {/* status block */}
                         <div className="border border-[#18181b] p-3">
-                            <div className="text-[10px] text-[#22d3ee] mb-2 tracking-widest uppercase">// status</div>
+                            <div className="text-[10px] text-[#22d3ee] mb-2 tracking-widest uppercase">{'// status'}</div>
                             {T.statusBlock.map((line) => (
                                 <div key={line} className="text-[11px] text-[#3f3f46] font-mono leading-relaxed">
                                     <span className="text-[#27272a]">{line.split('=')[0]}=</span>
