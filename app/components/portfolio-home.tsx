@@ -2,424 +2,537 @@
 
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import {
-    ArrowUpRight,
-    BarChart3,
-    Bot,
-    Container,
-    Code2,
-    Cpu,
-    Database,
-    Eye,
-    Globe,
-    GraduationCap,
-    Moon,
-    Orbit,
-    Server,
-    Sun,
-    Terminal,
-    Wrench,
-} from 'lucide-react';
 
-const fadeUp = {
-    hidden: { opacity: 0, y: 18 },
-    show: { opacity: 1, y: 0 },
-};
+/* ─── i18n ───────────────────────────────────────────────────────────── */
+
+type Lang = 'pt' | 'en';
+
+const copy = {
+    pt: {
+        location: 'são paulo, brasil',
+        h1: ['NICKOLAS', 'MAIA'],
+        tagline: 'backend developer · devops',
+        bio: 'Cursando ADS na FATEC Zona Leste, ex-aluno do IBM P-Tech. Aprofundando Java/Spring Boot e Golang/Gin. Experiência com RESTful APIs, PostgreSQL, MySQL, SAP Hana, Docker e Linux.',
+        sExperience: 'experiência',
+        sSkills: 'habilidades',
+        sDevops: 'foco devops',
+        sEducation: 'formação',
+        sCerts: 'certificações',
+        sProjects: 'projetos',
+        skillLabels: { backend: 'backend', frontend: 'frontend', devops: 'devops', databases: 'bancos de dados' },
+        expTotal: '9 meses',
+        expLocation: 'são paulo, brasil',
+        roles: [
+            { title: 'Assistente de Dev. Sênior', period: 'jun 2026 → hoje' },
+            { title: 'Assistente de Dev. Júnior',  period: 'nov 2025 → jun 2026' },
+            { title: 'Estagiário',                 period: 'out 2025 → nov 2025' },
+        ],
+        education: [
+            { institution: 'FATEC Zona Leste', degree: 'Tecnólogo — Análise e Desenvolvimento de Sistemas', period: '2025 → 2026' },
+            { institution: 'ETEC Zona Leste',  degree: 'Técnico — Desenvolvimento de Sistemas',            period: '2022 → 2024' },
+        ],
+        devopsFocus: [
+            { area: 'containers',      note: 'Docker images, builds multi-stage e stacks locais reproduzíveis.', status: 'ativo' },
+            { area: 'orquestração',    note: 'Fundamentos de Kubernetes — deployments, services, configmaps.', status: 'aprendendo' },
+            { area: 'observabilidade', note: 'Dashboards Grafana e playbooks Ansible para automação operacional.', status: 'ativo' },
+        ],
+        projects: [
+            { name: 'mirai',         subtitle: 'Plataforma de Avaliação TRL',     description: 'Avaliação de Nível de Maturidade Tecnológica para melhorar a governança e a qualidade das decisões em times de inovação.', href: 'https://github.com/nickolss/Mirai',         lang: 'TypeScript' },
+            { name: 'second-vision', subtitle: 'Dispositivo de Visão Assistida',  description: 'Microcomputador com câmera que detecta obstáculos em tempo real e dispara alertas via app mobile para deficientes visuais.', href: 'https://github.com/nickolss/Second-Vision',  lang: 'Python' },
+            { name: 'personal_rag',  subtitle: 'Assistente de IA e Produtividade',description: 'Assistente Python + Markdown para organizar contexto e melhorar produtividade com fluxos de recuperação de informação.', href: 'https://github.com/nickolss/personal_rag',    lang: 'Python' },
+            { name: 'front-hae',     subtitle: 'Frontend de Gestão Acadêmica',    description: 'Frontend TypeScript para operações da FATEC, parte do sistema end-to-end back-hae/front-hae.', href: 'https://github.com/nickolss/front-hae',     lang: 'TypeScript' },
+            { name: 'back-hae',      subtitle: 'Backend de Gestão Acadêmica',     description: 'Backend Java/Spring Boot para a FATEC com gestão completa de fluxos acadêmicos e API RESTful.', href: 'https://github.com/nickolss/back-hae',      lang: 'Java' },
+            { name: 'arch-wizard',   subtitle: 'Toolkit de Automação Linux',      description: 'Shell scripts e automação CLI para ambientes Linux demonstrando raciocínio de infraestrutura.', href: 'https://github.com/nickolss/ArchWizard',   lang: 'Shell' },
+        ],
+        statusBlock: ['$UPTIME = ∞', '$MODE   = building', '$STATUS = working'],
+        footer: '$ sair 0',
+    },
+    en: {
+        location: 'são paulo, brazil',
+        h1: ['NICKOLAS', 'MAIA'],
+        tagline: 'backend developer · devops',
+        bio: 'Studying ADS at FATEC Zona Leste, IBM P-Tech alumni. Currently deepening Java/Spring Boot and Golang/Gin. Experienced with RESTful APIs, PostgreSQL, MySQL, SAP Hana, Docker, and Linux.',
+        sExperience: 'experience',
+        sSkills: 'skills',
+        sDevops: 'devops focus',
+        sEducation: 'education',
+        sCerts: 'certifications',
+        sProjects: 'projects',
+        skillLabels: { backend: 'backend', frontend: 'frontend', devops: 'devops', databases: 'databases' },
+        expTotal: '9 months',
+        expLocation: 'são paulo, brazil',
+        roles: [
+            { title: 'Senior Developer Assistant', period: 'jun 2026 → present' },
+            { title: 'Junior Developer Assistant', period: 'nov 2025 → jun 2026' },
+            { title: 'Intern',                     period: 'oct 2025 → nov 2025' },
+        ],
+        education: [
+            { institution: 'FATEC Zona Leste', degree: 'Technologist — Systems Analysis and Development', period: '2025 → 2026' },
+            { institution: 'ETEC Zona Leste',  degree: 'Technician — Systems Development',               period: '2022 → 2024' },
+        ],
+        devopsFocus: [
+            { area: 'containers',    note: 'Docker images, multi-stage builds, and reproducible local stacks.', status: 'active' },
+            { area: 'orchestration', note: 'Kubernetes fundamentals — deployments, services, configmaps, scaling.', status: 'learning' },
+            { area: 'observability', note: 'Grafana dashboards for metrics and Ansible playbooks for automation.', status: 'active' },
+        ],
+        projects: [
+            { name: 'mirai',         subtitle: 'TRL Evaluation Platform',           description: 'Technology Readiness Level assessment improving project governance and decision quality for innovation teams.', href: 'https://github.com/nickolss/Mirai',         lang: 'TypeScript' },
+            { name: 'second-vision', subtitle: 'Assistive Vision Device (TCC)',     description: 'Microcomputer + camera system that detects obstacles in real time and triggers audio alerts via mobile app.', href: 'https://github.com/nickolss/Second-Vision',  lang: 'Python' },
+            { name: 'personal_rag',  subtitle: 'Generative AI Productivity Assistant', description: 'Python + Markdown assistant to organize context and improve productivity with retrieval-based workflows.', href: 'https://github.com/nickolss/personal_rag',    lang: 'Python' },
+            { name: 'front-hae',     subtitle: 'Academic Management Frontend',      description: 'TypeScript frontend for FATEC operations, part of the end-to-end back-hae/front-hae system.', href: 'https://github.com/nickolss/front-hae',     lang: 'TypeScript' },
+            { name: 'back-hae',      subtitle: 'Academic Management Backend',       description: 'Java/Spring Boot backend for FATEC combining complete academic workflow management with a clean RESTful API.', href: 'https://github.com/nickolss/back-hae',      lang: 'Java' },
+            { name: 'arch-wizard',   subtitle: 'Linux Automation Toolkit',          description: 'Shell scripts and CLI automation for Linux environments showcasing infrastructure thinking.', href: 'https://github.com/nickolss/ArchWizard',   lang: 'Shell' },
+        ],
+        statusBlock: ['$UPTIME = ∞', '$MODE   = building', '$STATUS = open to work'],
+        footer: '$ exit 0',
+    },
+} satisfies Record<Lang, unknown>;
+
+/* ─── static data ────────────────────────────────────────────────────── */
 
 const skills = {
-    backend: ['Java', 'Spring Boot', 'Golang', 'Gin', 'APIs', 'Architecture'],
-    frontend: ['TypeScript', 'React', 'Next.js', 'Tailwind CSS', 'UI/UX'],
-    devopsTools: ['Docker', 'Kubernetes', 'Grafana', 'Ansible', 'Linux', 'Shell Script'],
+    backend:   ['Java', 'Spring Boot', 'Golang', 'Gin', 'APIs RESTful', 'Architecture'],
+    frontend:  ['TypeScript', 'React', 'Next.js', 'Tailwind CSS', 'UI/UX'],
+    devops:    ['Docker', 'Kubernetes', 'Grafana', 'Ansible', 'Terraform', 'Datadog', 'Linux', 'Shell'],
+    databases: ['PostgreSQL', 'MySQL', 'SAP Hana'],
 };
 
-const projects = [
-    {
-        name: 'Mirai',
-        subtitle: 'TRL Evaluation Platform',
-        description:
-            'Application focused on Technology Readiness Level assessment, improving project governance and decision quality for innovation teams.',
-        icon: Cpu,
-        span: 'md:col-span-2',
-        href: 'https://github.com/nickolss/Mirai',
-    },
-    {
-        name: 'Second Vision',
-        subtitle: 'Assistive Vision Device (TCC)',
-        description:
-            'Final-year project featuring a microcomputer and integrated camera to detect obstacles in real time and trigger audio alerts through a mobile app for visually impaired users.',
-        icon: Eye,
-        span: 'md:col-span-2',
-        href: 'https://github.com/nickolss/Second-Vision',
-    },
-    {
-        name: 'Personal RAG',
-        subtitle: 'Generative AI Productivity Assistant',
-        description:
-            'Assistant built with Python and Markdown to organize context and improve day-to-day productivity with retrieval-based workflows.',
-        icon: Bot,
-        span: 'md:col-span-1',
-        href: 'https://github.com/nickolss/personal_rag',
-    },
-    {
-        name: 'Front Sistema HAE',
-        subtitle: 'Fullstack Academic Management',
-        description:
-            'End-to-end system (back-hae/front-hae) for FATEC operations, combining Java backend and TypeScript frontend for complete academic workflows.',
-        icon: GraduationCap,
-        span: 'md:col-span-2',
-        href: 'https://github.com/nickolss/front-hae',
-    },
-    {
-        name: 'Back Sistema HAE',
-        subtitle: 'Fullstack Academic Management',
-        description:
-            'End-to-end system (back-hae/front-hae) for FATEC operations, combining Java backend and TypeScript frontend for complete academic workflows.',
-        icon: GraduationCap,
-        span: 'md:col-span-2',
-        href: 'https://github.com/nickolss/back-hae',
-    },
-    {
-        name: 'ArchWizard',
-        subtitle: 'Linux Automation Toolkit',
-        description:
-            'Shell scripts and CLI automation for Linux environments, showcasing infrastructure thinking, reproducibility, and operational efficiency.',
-        icon: Terminal,
-        span: 'md:col-span-1',
-        href: 'https://github.com/nickolss/ArchWizard',
-    },
+const certifications = [
+    'Introdução ao Hacking e Pentest 2.0',
+    'Privacidade e Proteção de Dados (LGPD)',
+    'Cybersecurity',
+    'Certificado de Publicação de Artigo',
+    'Job Application Essentials',
 ];
 
-function SectionTitle({
-    eyebrow,
-    title,
-    isDark,
-}: {
-    eyebrow: string;
-    title: string;
-    isDark: boolean;
-}) {
+const langColors: Record<string, string> = {
+    TypeScript: '#3178c6',
+    Python:     '#3572a5',
+    Java:       '#b07219',
+    Shell:      '#89e051',
+    Golang:     '#00add8',
+};
+
+/* ─── ASCII computer (sidebar compact version) ───────────────────────── */
+
+const IW = 26;
+const IH = 7;
+
+const SCRIPT = [
+    { cmd: 'whoami',            outputs: ['  nickolas'] },
+    { cmd: 'cat role.txt',      outputs: ['  backend dev', '  devops mindset'] },
+    { cmd: 'ls skills/',        outputs: ['  java · go · ts · k8s'] },
+    { cmd: 'git log --oneline', outputs: ['  a3f1b2 feat: new api', '  9c4e21 fix: prod'] },
+    { cmd: 'docker ps',         outputs: ['  portfolio  running'] },
+];
+
+function buildFrame(rows: string[], cursor: string, blink: boolean): string {
+    const pad = (s: string) => s.slice(0, IW).padEnd(IW);
+    const hr    = '─'.repeat(IW + 2);
+    const top   = '┌' + hr + '┐';
+    const bot   = '└' + hr + '┘';
+    const blank = '│ ' + ' '.repeat(IW) + ' │';
+
+    const display = [...rows];
+    if (cursor !== '' && display.length < IH) {
+        display.push(cursor + (blink ? '█' : ' '));
+    }
+    while (display.length < IH) display.push('');
+
+    const inner = display.map(l => '│ ' + pad(l) + ' │');
+    const leg   = ' '.repeat(8) + '│' + ' '.repeat(IW - 10) + '│';
+    const base  = '═'.repeat(IW + 4);
+
+    return [top, blank, ...inner, blank, bot, leg, base].join('\n');
+}
+
+function AsciiComputer() {
+    const [rows, setRows]     = useState<string[]>([]);
+    const [cursor, setCursor] = useState('');
+    const [blink, setBlink]   = useState(true);
+
+    useEffect(() => {
+        const t = setInterval(() => setBlink(b => !b), 530);
+        return () => clearInterval(t);
+    }, []);
+
+    useEffect(() => {
+        let dead = false;
+        const sleep = (ms: number) =>
+            new Promise<void>((res, rej) => setTimeout(() => (dead ? rej() : res()), ms));
+
+        async function run() {
+            try {
+                while (!dead) {
+                    let current: string[] = [];
+                    for (const { cmd, outputs } of SCRIPT) {
+                        let typed = '';
+                        setCursor('$ ');
+                        for (const ch of cmd) {
+                            typed += ch;
+                            setCursor('$ ' + typed);
+                            await sleep(60);
+                        }
+                        await sleep(200);
+                        current = [...current, ' $ ' + cmd];
+                        setRows([...current]);
+                        setCursor('');
+                        for (const out of outputs) {
+                            current = [...current, out];
+                            setRows([...current]);
+                            await sleep(65);
+                        }
+                        await sleep(450);
+                        if (current.length < IH - 1) current = [...current, ''];
+                        setCursor('$ ');
+                    }
+                    await sleep(1200);
+                    setRows([]);
+                    setCursor('');
+                    await sleep(320);
+                }
+            } catch { /* unmounted */ }
+        }
+
+        run();
+        return () => { dead = true; };
+    }, []);
+
     return (
-        <div className="mb-6 sm:mb-8">
-            <p className={`text-xs uppercase tracking-[0.2em] ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
-                {eyebrow}
-            </p>
-            <h2 className={`mt-2 text-2xl font-semibold tracking-tight sm:text-3xl ${isDark ? 'text-zinc-100' : 'text-zinc-900'}`}>
-                {title}
-            </h2>
+        <pre aria-hidden className="font-mono text-[10.5px] leading-normal select-none text-[#2a2a30]">
+            {buildFrame(rows, cursor, blink)}
+        </pre>
+    );
+}
+
+/* ─── side decoration ────────────────────────────────────────────────── */
+
+const SIDE_CHARS = Array.from({ length: 40 }, (_, i) =>
+    i % 9 === 0 ? '┤' : i % 9 === 4 ? '├' : '│'
+).join('\n');
+
+function SideRule({ side }: { side: 'left' | 'right' }) {
+    return (
+        <pre
+            aria-hidden
+            className={`fixed top-0 h-screen pointer-events-none hidden xl:block text-[10px] font-mono leading-[2.6] select-none text-[#18181b] ${side === 'left' ? 'left-5' : 'right-5'}`}
+        >
+            {SIDE_CHARS}
+        </pre>
+    );
+}
+
+/* ─── section label ──────────────────────────────────────────────────── */
+
+function Label({ children }: { children: string }) {
+    return (
+        <motion.p variants={fadeUp} className="text-[11px] uppercase tracking-[0.18em] mb-5">
+            <span className="text-[#22d3ee]">// </span>
+            <span className="text-[#3f3f46]">{children}</span>
+        </motion.p>
+    );
+}
+
+function Rule() {
+    return (
+        <div className="flex items-center gap-2 text-[#1c1c1f] text-[10px] font-mono">
+            <div className="flex-1 border-t border-[#1c1c1f]" />
+            <span>◆</span>
+            <div className="flex-1 border-t border-[#1c1c1f]" />
         </div>
     );
 }
 
+/* ─── animation ──────────────────────────────────────────────────────── */
+
+const fadeUp = {
+    hidden: { opacity: 0, y: 8 },
+    show:   { opacity: 1, y: 0, transition: { duration: 0.4 } },
+};
+
+const stagger = {
+    hidden: {},
+    show:   { transition: { staggerChildren: 0.08 } },
+};
+
+function Section({ children }: { children: React.ReactNode }) {
+    return (
+        <motion.section
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.12 }}
+            variants={stagger}
+        >
+            {children}
+        </motion.section>
+    );
+}
+
+/* ─── main ───────────────────────────────────────────────────────────── */
+
 export default function PortfolioHome() {
-    const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-        if (typeof window === 'undefined') {
-            return 'dark';
-        }
-
-        const savedTheme = window.localStorage.getItem('theme');
-        if (savedTheme === 'light' || savedTheme === 'dark') {
-            return savedTheme;
-        }
-
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const [lang, setLang] = useState<Lang>(() => {
+        if (typeof window === 'undefined') return 'pt';
+        return (window.localStorage.getItem('lang') as Lang) ?? 'pt';
     });
-    const isDark = theme === 'dark';
 
-    useEffect(() => {
-        document.documentElement.dataset.theme = theme;
-        window.localStorage.setItem('theme', theme);
-    }, [theme]);
+    useEffect(() => { window.localStorage.setItem('lang', lang); }, [lang]);
 
-    const cardClass = isDark
-        ? 'border-zinc-800 bg-zinc-950/60'
-        : 'border-zinc-200 bg-white/80 shadow-[0_8px_30px_rgba(15,23,42,0.08)]';
-
-    const chipClass = isDark
-        ? 'border-zinc-800 bg-zinc-900/70 text-zinc-300'
-        : 'border-zinc-200 bg-white text-zinc-700';
-
-    const mutedTextClass = isDark ? 'text-zinc-400' : 'text-zinc-600';
-    const bodyTextClass = isDark ? 'text-zinc-300' : 'text-zinc-700';
-    const titleTextClass = isDark ? 'text-zinc-100' : 'text-zinc-900';
+    const T = copy[lang];
 
     return (
-        <main className={`relative min-h-screen overflow-x-clip ${isDark ? 'bg-[#07090d] text-zinc-100' : 'bg-[#f3f6fb] text-zinc-900'}`}>
-            <div
-                className={`pointer-events-none absolute inset-0 ${isDark
-                        ? 'bg-[radial-gradient(circle_at_18%_16%,rgba(35,82,138,0.35),transparent_40%),radial-gradient(circle_at_78%_0%,rgba(15,78,53,0.25),transparent_35%),linear-gradient(180deg,#07090d_0%,#07090d_50%,#05070a_100%)]'
-                        : 'bg-[radial-gradient(circle_at_15%_10%,rgba(59,130,246,0.18),transparent_42%),radial-gradient(circle_at_80%_0%,rgba(16,185,129,0.16),transparent_36%),linear-gradient(180deg,#f3f6fb_0%,#eef3f9_45%,#f8fbff_100%)]'
-                    }`}
-            />
+        <div className="min-h-screen bg-[#0c0c0e] text-[#a1a1aa] font-mono">
 
-            <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-20 px-6 pb-16 pt-10 sm:px-10 sm:pt-14 lg:gap-24 lg:px-12">
-                <motion.header
-                    initial="hidden"
-                    animate="show"
-                    variants={{
-                        hidden: {},
-                        show: {
-                            transition: {
-                                staggerChildren: 0.12,
-                            },
-                        },
-                    }}
-                    className={`rounded-3xl border p-6 backdrop-blur sm:p-10 ${isDark
-                            ? 'border-zinc-800/80 bg-zinc-950/60 shadow-[0_0_0_1px_rgba(255,255,255,0.02),0_30px_80px_rgba(0,0,0,0.45)]'
-                            : 'border-zinc-200 bg-white/75 shadow-[0_12px_45px_rgba(15,23,42,0.10)]'
-                        }`}
+            {/* subtle vertical rails on very wide screens */}
+            <SideRule side="left" />
+            <SideRule side="right" />
+
+            <div className="mx-auto max-w-6xl px-6 sm:px-10 lg:px-14 py-12">
+
+                {/* ── top bar ─────────────────────────────────────────── */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex flex-wrap items-center justify-between gap-3 text-xs text-[#3f3f46] mb-14 pb-5 border-b border-[#18181b]"
                 >
-                    <motion.div variants={fadeUp} className="flex items-center justify-between">
-                        <span className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs ${chipClass}`}>
-                            <Globe className="h-3.5 w-3.5" />
-                            Sao Paulo, Brazil
-                        </span>
-                        <div className="flex items-center gap-2">
-                            <a
-                                href="https://github.com/nickolss"
-                                target="_blank"
-                                rel="noreferrer"
-                                className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs transition ${isDark
-                                        ? 'border-zinc-800 text-zinc-300 hover:border-zinc-600 hover:text-zinc-100'
-                                        : 'border-zinc-200 text-zinc-700 hover:border-zinc-400 hover:text-zinc-900'
-                                    }`}
-                            >
-                                <Code2 className="h-3.5 w-3.5" />
-                                github.com/nickolss
-                            </a>
-                            <button
-                                type="button"
-                                aria-label="Toggle theme"
-                                onClick={() => setTheme(isDark ? 'light' : 'dark')}
-                                className={`inline-flex h-8 w-8 items-center justify-center rounded-full border transition ${isDark
-                                        ? 'border-zinc-800 bg-zinc-900/80 text-zinc-200 hover:border-zinc-600'
-                                        : 'border-zinc-200 bg-white text-zinc-700 hover:border-zinc-400'
-                                    }`}
-                            >
-                                {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                            </button>
+                    <span className="text-[#52525b]">
+                        <span className="text-[#22d3ee]">~</span>/{T.location}
+                    </span>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                        <a href="mailto:nickolasmaiaraujo@gmail.com" className="hover:text-[#22d3ee] transition-colors">
+                            nickolasmaiaraujo@gmail.com
+                        </a>
+                        <a href="https://linkedin.com/in/nickolas-maia" target="_blank" rel="noreferrer" className="hover:text-[#22d3ee] transition-colors">
+                            linkedin ↗
+                        </a>
+                        <a href="https://github.com/nickolss" target="_blank" rel="noreferrer" className="hover:text-[#22d3ee] transition-colors">
+                            github ↗
+                        </a>
+                        <div className="flex items-center gap-1 border border-[#1c1c1f] px-2 py-0.5">
+                            {(['pt', 'en'] as Lang[]).map((l, i) => (
+                                <span key={l} className="flex items-center gap-1">
+                                    <button
+                                        onClick={() => setLang(l)}
+                                        className={`transition-colors ${lang === l ? 'text-[#22d3ee]' : 'text-[#27272a] hover:text-[#52525b]'}`}
+                                    >
+                                        {l.toUpperCase()}
+                                    </button>
+                                    {i === 0 && <span className="text-[#1c1c1f]">·</span>}
+                                </span>
+                            ))}
                         </div>
-                    </motion.div>
+                    </div>
+                </motion.div>
 
-                    <motion.p
-                        variants={fadeUp}
-                        className={`mt-8 max-w-2xl text-sm uppercase tracking-[0.22em] ${mutedTextClass}`}
+                {/* ── two-column layout ────────────────────────────────── */}
+                <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 lg:items-start">
+
+                    {/* ══ LEFT SIDEBAR ═══════════════════════════════════ */}
+                    <motion.aside
+                        initial={{ opacity: 0, x: -12 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
+                        className="lg:w-60 lg:shrink-0 lg:sticky lg:top-12 flex flex-col gap-7"
                     >
-                        Nickolas Maia de Araujo
-                    </motion.p>
-
-                    <motion.h1
-                        variants={fadeUp}
-                        className={`mt-3 max-w-4xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:text-6xl ${isDark ? 'text-zinc-50' : 'text-zinc-950'
-                            }`}
-                    >
-                        Fullstack Developer
-                        <br />
-                        <span
-                            className={`bg-clip-text text-transparent ${isDark
-                                    ? 'bg-gradient-to-r from-zinc-100 via-sky-200 to-emerald-200'
-                                    : 'bg-gradient-to-r from-zinc-900 via-sky-700 to-emerald-700'
-                                }`}
-                        >
-                            with a DevOps Mindset
-                        </span>
-                    </motion.h1>
-
-                    <motion.p
-                        variants={fadeUp}
-                        className={`mt-6 max-w-2xl text-base leading-relaxed sm:text-lg ${bodyTextClass}`}
-                    >
-                        I build robust products across backend and frontend while evolving my DevOps practice with observability, containerization, and automation.
-                    </motion.p>
-
-                    <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-3">
-                        {[
-                            'TypeScript',
-                            'Java + Spring Boot',
-                            'Docker + Kubernetes',
-                            'Grafana + Ansible',
-                            'Kotlin',
-                            'Shell Script',
-                        ].map((item) => (
-                            <span
-                                key={item}
-                                className={`rounded-full border px-3 py-1.5 text-xs ${chipClass}`}
-                            >
-                                {item}
-                            </span>
-                        ))}
-                    </motion.div>
-                </motion.header>
-
-                <motion.section
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true, amount: 0.25 }}
-                    variants={{
-                        hidden: {},
-                        show: {
-                            transition: {
-                                staggerChildren: 0.08,
-                            },
-                        },
-                    }}
-                >
-                    <SectionTitle eyebrow="Capabilities" title="Skills" isDark={isDark} />
-                    <div className="grid gap-4 md:grid-cols-3">
-                        <motion.article variants={fadeUp} className={`rounded-2xl border p-5 ${cardClass}`}>
-                            <div className={`mb-4 inline-flex rounded-lg border p-2 ${chipClass}`}>
-                                <Server className={`h-4 w-4 ${isDark ? 'text-zinc-200' : 'text-zinc-700'}`} />
+                        {/* name */}
+                        <div>
+                            <div className="text-[10px] text-[#22d3ee] mb-2 tracking-widest uppercase">
+                                // dev
                             </div>
-                            <h3 className={`text-lg font-medium ${titleTextClass}`}>Backend</h3>
-                            <p className={`mt-2 text-sm ${mutedTextClass}`}>Java and scalable service-oriented systems.</p>
-                            <div className="mt-4 flex flex-wrap gap-2">
-                                {skills.backend.map((skill) => (
-                                    <span
-                                        key={skill}
-                                        className={`rounded-md px-2.5 py-1 text-xs ${isDark ? 'bg-zinc-900 text-zinc-300' : 'bg-zinc-100 text-zinc-700'
-                                            }`}
-                                    >
-                                        {skill}
-                                    </span>
+                            <h1 className="text-3xl sm:text-4xl font-bold leading-none tracking-tight text-white">
+                                {T.h1[0]}
+                                <br />
+                                <span className="text-[#22d3ee]">{T.h1[1]}</span>
+                            </h1>
+                            <p className="text-[#3f3f46] text-xs mt-2">{T.tagline}</p>
+                        </div>
+
+                        {/* ASCII computer */}
+                        <AsciiComputer />
+
+                        {/* bio */}
+                        <p className="text-[#52525b] text-xs leading-relaxed">
+                            {T.bio}
+                        </p>
+
+                        {/* status block */}
+                        <div className="border border-[#18181b] p-3">
+                            <div className="text-[10px] text-[#22d3ee] mb-2 tracking-widest uppercase">// status</div>
+                            {T.statusBlock.map((line) => (
+                                <div key={line} className="text-[11px] text-[#3f3f46] font-mono leading-relaxed">
+                                    <span className="text-[#27272a]">{line.split('=')[0]}=</span>
+                                    <span className="text-[#52525b]">{line.split('=')[1]}</span>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* decorative bottom ASCII */}
+                        <pre aria-hidden className="text-[10px] font-mono text-[#1c1c1f] select-none leading-snug hidden lg:block">
+{`┌───────────────────┐
+│ ■ □ □  terminal   │
+├───────────────────┤
+│                   │
+│   > init(career)  │
+│   > commit --all  │
+│   > push origin   │
+│                   │
+└───────────────────┘`}
+                        </pre>
+                    </motion.aside>
+
+                    {/* ══ RIGHT MAIN CONTENT ═════════════════════════════ */}
+                    <main className="flex-1 flex flex-col gap-12 min-w-0">
+
+                        {/* experience */}
+                        <Section>
+                            <Label>{T.sExperience}</Label>
+                            <motion.div variants={fadeUp} className="flex flex-col gap-4">
+                                <div className="flex items-baseline justify-between gap-4">
+                                    <span className="text-white text-sm font-medium">Inpower Br</span>
+                                    <span className="text-[#3f3f46] text-xs shrink-0">{T.expTotal}</span>
+                                </div>
+                                <p className="text-[#3f3f46] text-xs -mt-2">{T.expLocation}</p>
+                                <div className="flex flex-col gap-2.5 pl-3 border-l border-[#1c1c1f]">
+                                    {T.roles.map(({ title, period }) => (
+                                        <div key={title} className="flex items-baseline justify-between gap-4">
+                                            <span className="text-[#71717a] text-xs">{title}</span>
+                                            <span className="text-[#3f3f46] text-[11px] shrink-0">{period}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </motion.div>
+                        </Section>
+
+                        <Rule />
+
+                        {/* skills */}
+                        <Section>
+                            <Label>{T.sSkills}</Label>
+                            <div className="flex flex-col gap-3">
+                                {(
+                                    [
+                                        { key: 'backend',   items: skills.backend },
+                                        { key: 'frontend',  items: skills.frontend },
+                                        { key: 'devops',    items: skills.devops },
+                                        { key: 'databases', items: skills.databases },
+                                    ] as const
+                                ).map(({ key, items }) => (
+                                    <motion.div key={key} variants={fadeUp} className="flex flex-wrap items-baseline gap-x-1 gap-y-1">
+                                        <span className="text-[#22d3ee] text-[10px] uppercase tracking-wider w-28 shrink-0 opacity-60">
+                                            {T.skillLabels[key]}
+                                        </span>
+                                        {items.map((s, i) => (
+                                            <span key={s}>
+                                                <span className="text-[#71717a] hover:text-[#d4d4d8] transition-colors cursor-default text-xs">{s}</span>
+                                                {i < items.length - 1 && <span className="text-[#27272a] mx-1.5">·</span>}
+                                            </span>
+                                        ))}
+                                    </motion.div>
                                 ))}
                             </div>
-                        </motion.article>
+                        </Section>
 
-                        <motion.article variants={fadeUp} className={`rounded-2xl border p-5 ${cardClass}`}>
-                            <div className={`mb-4 inline-flex rounded-lg border p-2 ${chipClass}`}>
-                                <Database className={`h-4 w-4 ${isDark ? 'text-zinc-200' : 'text-zinc-700'}`} />
-                            </div>
-                            <h3 className={`text-lg font-medium ${titleTextClass}`}>Frontend</h3>
-                            <p className={`mt-2 text-sm ${mutedTextClass}`}>Interfaces with strong DX and maintainable design systems.</p>
-                            <div className="mt-4 flex flex-wrap gap-2">
-                                {skills.frontend.map((skill) => (
-                                    <span
-                                        key={skill}
-                                        className={`rounded-md px-2.5 py-1 text-xs ${isDark ? 'bg-zinc-900 text-zinc-300' : 'bg-zinc-100 text-zinc-700'
-                                            }`}
-                                    >
-                                        {skill}
-                                    </span>
+                        <Rule />
+
+                        {/* devops focus */}
+                        <Section>
+                            <Label>{T.sDevops}</Label>
+                            <div className="flex flex-col gap-4">
+                                {T.devopsFocus.map(({ area, note, status }) => (
+                                    <motion.div key={area} variants={fadeUp} className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-1">
+                                        <span className="text-[#a1a1aa] text-xs font-medium">{area}</span>
+                                        <span className={`text-[10px] uppercase tracking-widest text-right ${
+                                            status === 'ativo' || status === 'active'
+                                                ? 'text-[#22d3ee] opacity-60'
+                                                : 'text-[#44403c]'
+                                        }`}>
+                                            {status}
+                                        </span>
+                                        <p className="text-[#3f3f46] text-xs leading-relaxed col-span-2">{note}</p>
+                                    </motion.div>
                                 ))}
                             </div>
-                        </motion.article>
+                        </Section>
 
-                        <motion.article variants={fadeUp} className={`rounded-2xl border p-5 ${cardClass}`}>
-                            <div className={`mb-4 inline-flex rounded-lg border p-2 ${chipClass}`}>
-                                <Wrench className={`h-4 w-4 ${isDark ? 'text-zinc-200' : 'text-zinc-700'}`} />
-                            </div>
-                            <h3 className={`text-lg font-medium ${titleTextClass}`}>DevOps & Tools</h3>
-                            <p className={`mt-2 text-sm ${mutedTextClass}`}>Containerization, observability, and automation in practice.</p>
-                            <div className="mt-4 flex flex-wrap gap-2">
-                                {skills.devopsTools.map((skill) => (
-                                    <span
-                                        key={skill}
-                                        className={`rounded-md px-2.5 py-1 text-xs ${isDark ? 'bg-zinc-900 text-zinc-300' : 'bg-zinc-100 text-zinc-700'
-                                            }`}
-                                    >
-                                        {skill}
-                                    </span>
+                        <Rule />
+
+                        {/* education */}
+                        <Section>
+                            <Label>{T.sEducation}</Label>
+                            <div className="flex flex-col gap-5">
+                                {T.education.map(({ institution, degree, period }) => (
+                                    <motion.div key={institution} variants={fadeUp} className="flex flex-col gap-0.5">
+                                        <div className="flex items-baseline justify-between gap-4">
+                                            <span className="text-white text-sm">{institution}</span>
+                                            <span className="text-[#3f3f46] text-xs shrink-0">{period}</span>
+                                        </div>
+                                        <p className="text-[#52525b] text-xs">{degree}</p>
+                                    </motion.div>
                                 ))}
                             </div>
-                        </motion.article>
-                    </div>
-                </motion.section>
+                        </Section>
 
-                <motion.section
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true, amount: 0.25 }}
-                    variants={{
-                        hidden: {},
-                        show: {
-                            transition: {
-                                staggerChildren: 0.08,
-                            },
-                        },
-                    }}
-                >
-                    <SectionTitle eyebrow="Learning Track" title="DevOps Focus" isDark={isDark} />
-                    <div className="grid gap-4 md:grid-cols-3">
-                        <motion.article variants={fadeUp} className={`rounded-2xl border p-5 ${cardClass}`}>
-                            <div className={`mb-4 inline-flex rounded-lg border p-2 ${chipClass}`}>
-                                <Container className={`h-4 w-4 ${isDark ? 'text-zinc-200' : 'text-zinc-700'}`} />
+                        <Rule />
+
+                        {/* certifications */}
+                        <Section>
+                            <Label>{T.sCerts}</Label>
+                            <div className="grid sm:grid-cols-2 gap-x-8 gap-y-2">
+                                {certifications.map((cert) => (
+                                    <motion.div key={cert} variants={fadeUp} className="flex items-start gap-2.5">
+                                        <span className="text-[#22d3ee] opacity-40 shrink-0 mt-0.5">▸</span>
+                                        <span className="text-[#71717a] text-xs leading-relaxed">{cert}</span>
+                                    </motion.div>
+                                ))}
                             </div>
-                            <h3 className={`text-lg font-medium ${titleTextClass}`}>Containers</h3>
-                            <p className={`mt-2 text-sm ${mutedTextClass}`}>Hands-on with Docker images, layers, and reproducible local stacks.</p>
-                        </motion.article>
+                        </Section>
 
-                        <motion.article variants={fadeUp} className={`rounded-2xl border p-5 ${cardClass}`}>
-                            <div className={`mb-4 inline-flex rounded-lg border p-2 ${chipClass}`}>
-                                <Orbit className={`h-4 w-4 ${isDark ? 'text-zinc-200' : 'text-zinc-700'}`} />
-                            </div>
-                            <h3 className={`text-lg font-medium ${titleTextClass}`}>Orchestration</h3>
-                            <p className={`mt-2 text-sm ${mutedTextClass}`}>Studying Kubernetes fundamentals, deployment strategies, and scaling basics.</p>
-                        </motion.article>
+                        <Rule />
 
-                        <motion.article variants={fadeUp} className={`rounded-2xl border p-5 ${cardClass}`}>
-                            <div className={`mb-4 inline-flex rounded-lg border p-2 ${chipClass}`}>
-                                <BarChart3 className={`h-4 w-4 ${isDark ? 'text-zinc-200' : 'text-zinc-700'}`} />
-                            </div>
-                            <h3 className={`text-lg font-medium ${titleTextClass}`}>Observability & Automation</h3>
-                            <p className={`mt-2 text-sm ${mutedTextClass}`}>Evolving with Grafana dashboards and Ansible playbooks for operational workflows.</p>
-                        </motion.article>
-                    </div>
-                </motion.section>
-
-                <motion.section
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true, amount: 0.2 }}
-                    variants={{
-                        hidden: {},
-                        show: {
-                            transition: {
-                                staggerChildren: 0.08,
-                            },
-                        },
-                    }}
-                >
-                    <SectionTitle eyebrow="Selected Work" title="Projects" isDark={isDark} />
-
-                    <div className="grid gap-4 md:grid-cols-3">
-                        {projects.map((project) => {
-                            const Icon = project.icon;
-                            return (
-                                <motion.a
-                                    key={project.name}
-                                    variants={fadeUp}
-                                    href={project.href}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className={`group relative overflow-hidden rounded-2xl border p-5 transition ${project.span} ${isDark
-                                            ? 'border-zinc-800 bg-zinc-950/70 hover:border-zinc-700 hover:bg-zinc-900/70'
-                                            : 'border-zinc-200 bg-white/85 hover:border-zinc-300 hover:bg-white'
-                                        }`}
-                                >
-                                    <div
-                                        className={`mb-4 inline-flex rounded-lg border p-2 transition ${isDark
-                                                ? 'border-zinc-800 bg-zinc-900/80 group-hover:border-zinc-700'
-                                                : 'border-zinc-200 bg-zinc-50 group-hover:border-zinc-300'
-                                            }`}
+                        {/* projects */}
+                        <Section>
+                            <Label>{T.sProjects}</Label>
+                            <div className="flex flex-col gap-8">
+                                {T.projects.map((p) => (
+                                    <motion.a
+                                        key={p.name}
+                                        variants={fadeUp}
+                                        href={p.href}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="group flex flex-col gap-1.5 pl-3 border-l border-[#18181b] hover:border-[#22d3ee] transition-colors"
                                     >
-                                        <Icon className={`h-4 w-4 ${isDark ? 'text-zinc-200' : 'text-zinc-700'}`} />
-                                    </div>
-                                    <h3 className={`text-xl font-semibold tracking-tight ${titleTextClass}`}>{project.name}</h3>
-                                    <p className={`mt-1 text-xs uppercase tracking-[0.18em] ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>
-                                        {project.subtitle}
-                                    </p>
-                                    <p className={`mt-4 text-sm leading-relaxed ${bodyTextClass}`}>{project.description}</p>
+                                        <div className="flex items-center gap-3 flex-wrap">
+                                            <span className="text-white text-sm group-hover:text-[#22d3ee] transition-colors font-medium">
+                                                {p.name}
+                                            </span>
+                                            <span className="text-[#27272a] text-xs">/</span>
+                                            <span className="text-[#52525b] text-xs">{p.subtitle}</span>
+                                            <div className="ml-auto flex items-center gap-1.5 text-[#3f3f46] text-xs shrink-0">
+                                                <span
+                                                    className="inline-block w-2 h-2 rounded-full"
+                                                    style={{ backgroundColor: langColors[p.lang] ?? '#555' }}
+                                                />
+                                                {p.lang}
+                                            </div>
+                                        </div>
+                                        <p className="text-xs text-[#52525b] leading-relaxed">{p.description}</p>
+                                        <span className="text-[#27272a] text-xs group-hover:text-[#22d3ee] transition-colors">
+                                            github.com/nickolss/{p.name} ↗
+                                        </span>
+                                    </motion.a>
+                                ))}
+                            </div>
+                        </Section>
 
-                                    <span className={`mt-6 inline-flex items-center gap-2 text-sm ${isDark ? 'text-zinc-200' : 'text-zinc-700'}`}>
-                                        View project
-                                        <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                                    </span>
-                                </motion.a>
-                            );
-                        })}
-                    </div>
-                </motion.section>
+                        {/* footer */}
+                        <div className="text-[#27272a] text-xs pt-4 border-t border-[#18181b]">
+                            {T.footer}
+                        </div>
 
+                    </main>
+                </div>
             </div>
-        </main>
+        </div>
     );
 }
