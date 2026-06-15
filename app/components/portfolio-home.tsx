@@ -18,6 +18,8 @@ const copy = {
         sDevops: 'foco devops',
         sEducation: 'formação',
         sCerts: 'certificações',
+        certNow: 'agora',
+        certStudying: 'estudando',
         sProjects: 'projetos',
         skillLabels: { backend: 'backend', frontend: 'frontend', devops: 'devops', databases: 'bancos de dados' },
         expTotal: '9 meses',
@@ -57,6 +59,8 @@ const copy = {
         sDevops: 'devops focus',
         sEducation: 'education',
         sCerts: 'certifications',
+        certNow: 'now',
+        certStudying: 'studying',
         sProjects: 'projects',
         skillLabels: { backend: 'backend', frontend: 'frontend', devops: 'devops', databases: 'databases' },
         expTotal: '9 months',
@@ -98,11 +102,13 @@ const skills = {
 };
 
 const certifications = [
-    'Introdução ao Hacking e Pentest 2.0',
-    'Privacidade e Proteção de Dados (LGPD)',
-    'Cybersecurity',
-    'Certificado de Publicação de Artigo',
-    'Job Application Essentials',
+    { name: 'Privacidade e Proteção de Dados (LGPD)', institution: 'Senai São Paulo',         date: 'ago 2022', status: 'done'     as const },
+    { name: 'Job Application Essentials',              institution: 'IBM',                      date: 'mar 2024', status: 'done'     as const },
+    { name: 'Introdução ao Hacking e Pentest 2.0',    institution: 'Solyd Offensive Security', date: 'ago 2024', status: 'done'     as const },
+    { name: 'Certificado de Publicação de Artigo',    institution: 'FATEC Zona Leste',         date: 'dez 2024', status: 'done'     as const },
+    { name: 'Cybersecurity',                           institution: 'FIAP',                     date: 'abr 2025', status: 'done'     as const },
+    { name: 'Golang do Zero ao Avançado',              institution: 'Udemy', href: 'https://www.udemy.com/course/golang-do-zero-ao-avancado/',          date: null, status: 'progress' as const },
+    { name: 'Kubernetes do Básico ao Avançado',        institution: 'Udemy', href: 'https://www.udemy.com/course/kubernetes-do-basico-ao-avancado/',    date: null, status: 'progress' as const },
 ];
 
 const langColors: Record<string, string> = {
@@ -199,7 +205,7 @@ function AsciiComputer() {
     }, []);
 
     return (
-        <pre aria-hidden className="font-mono text-[10.5px] leading-normal select-none text-[#2a2a30]">
+        <pre aria-hidden className="font-mono text-[10.5px] leading-normal select-none text-[#3f3f46]">
             {buildFrame(rows, cursor, blink)}
         </pre>
     );
@@ -228,7 +234,7 @@ function Label({ children }: { children: string }) {
     return (
         <motion.p variants={fadeUp} className="text-[11px] uppercase tracking-[0.18em] mb-5">
             <span className="text-[#22d3ee]">{'// '}</span>
-            <span className="text-[#3f3f46]">{children}</span>
+            <span className="text-[#71717a]">{children}</span>
         </motion.p>
     );
 }
@@ -293,9 +299,9 @@ export default function PortfolioHome() {
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="flex flex-wrap items-center justify-between gap-3 text-xs text-[#3f3f46] mb-14 pb-5 border-b border-[#18181b]"
+                    className="flex flex-wrap items-center justify-between gap-3 text-xs text-[#52525b] mb-14 pb-5 border-b border-[#18181b]"
                 >
-                    <span className="text-[#52525b]">
+                    <span className="text-[#71717a]">
                         <span className="text-[#22d3ee]">~</span>/{T.location}
                     </span>
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
@@ -313,7 +319,7 @@ export default function PortfolioHome() {
                                 <span key={l} className="flex items-center gap-1">
                                     <button
                                         onClick={() => setLang(l)}
-                                        className={`transition-colors ${lang === l ? 'text-[#22d3ee]' : 'text-[#27272a] hover:text-[#52525b]'}`}
+                                        className={`transition-colors ${lang === l ? 'text-[#22d3ee]' : 'text-[#3f3f46] hover:text-[#71717a]'}`}
                                     >
                                         {l.toUpperCase()}
                                     </button>
@@ -344,14 +350,14 @@ export default function PortfolioHome() {
                                 <br />
                                 <span className="text-[#22d3ee]">{T.h1[1]}</span>
                             </h1>
-                            <p className="text-[#3f3f46] text-xs mt-2">{T.tagline}</p>
+                            <p className="text-[#71717a] text-xs mt-2">{T.tagline}</p>
                         </div>
 
                         {/* ASCII computer */}
                         <AsciiComputer />
 
                         {/* bio */}
-                        <p className="text-[#52525b] text-xs leading-relaxed">
+                        <p className="text-[#a1a1aa] text-xs leading-relaxed">
                             {T.bio}
                         </p>
 
@@ -359,15 +365,15 @@ export default function PortfolioHome() {
                         <div className="border border-[#18181b] p-3">
                             <div className="text-[10px] text-[#22d3ee] mb-2 tracking-widest uppercase">{'// status'}</div>
                             {T.statusBlock.map((line) => (
-                                <div key={line} className="text-[11px] text-[#3f3f46] font-mono leading-relaxed">
-                                    <span className="text-[#27272a]">{line.split('=')[0]}=</span>
-                                    <span className="text-[#52525b]">{line.split('=')[1]}</span>
+                                <div key={line} className="text-[11px] text-[#71717a] font-mono leading-relaxed">
+                                    <span className="text-[#52525b]">{line.split('=')[0]}=</span>
+                                    <span className="text-[#a1a1aa]">{line.split('=')[1]}</span>
                                 </div>
                             ))}
                         </div>
 
                         {/* decorative bottom ASCII */}
-                        <pre aria-hidden className="text-[10px] font-mono text-[#1c1c1f] select-none leading-snug hidden lg:block">
+                        <pre aria-hidden className="text-[10px] font-mono text-[#3f3f46] select-none leading-snug hidden lg:block">
 {`┌───────────────────┐
 │ ■ □ □  terminal   │
 ├───────────────────┤
@@ -391,12 +397,12 @@ export default function PortfolioHome() {
                                     <span className="text-white text-sm font-medium">Inpower Br</span>
                                     <span className="text-[#3f3f46] text-xs shrink-0">{T.expTotal}</span>
                                 </div>
-                                <p className="text-[#3f3f46] text-xs -mt-2">{T.expLocation}</p>
+                                <p className="text-[#52525b] text-xs -mt-2">{T.expLocation}</p>
                                 <div className="flex flex-col gap-2.5 pl-3 border-l border-[#1c1c1f]">
                                     {T.roles.map(({ title, period }) => (
                                         <div key={title} className="flex items-baseline justify-between gap-4">
-                                            <span className="text-[#71717a] text-xs">{title}</span>
-                                            <span className="text-[#3f3f46] text-[11px] shrink-0">{period}</span>
+                                            <span className="text-[#a1a1aa] text-xs">{title}</span>
+                                            <span className="text-[#52525b] text-[11px] shrink-0">{period}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -418,13 +424,13 @@ export default function PortfolioHome() {
                                     ] as const
                                 ).map(({ key, items }) => (
                                     <motion.div key={key} variants={fadeUp} className="flex flex-wrap items-baseline gap-x-1 gap-y-1">
-                                        <span className="text-[#22d3ee] text-[10px] uppercase tracking-wider w-28 shrink-0 opacity-60">
+                                        <span className="text-[#22d3ee] text-[10px] uppercase tracking-wider w-28 shrink-0 opacity-80">
                                             {T.skillLabels[key]}
                                         </span>
                                         {items.map((s, i) => (
                                             <span key={s}>
-                                                <span className="text-[#71717a] hover:text-[#d4d4d8] transition-colors cursor-default text-xs">{s}</span>
-                                                {i < items.length - 1 && <span className="text-[#27272a] mx-1.5">·</span>}
+                                                <span className="text-[#a1a1aa] hover:text-[#d4d4d8] transition-colors cursor-default text-xs">{s}</span>
+                                                {i < items.length - 1 && <span className="text-[#52525b] mx-1.5">·</span>}
                                             </span>
                                         ))}
                                     </motion.div>
@@ -443,12 +449,12 @@ export default function PortfolioHome() {
                                         <span className="text-[#a1a1aa] text-xs font-medium">{area}</span>
                                         <span className={`text-[10px] uppercase tracking-widest text-right ${
                                             status === 'ativo' || status === 'active'
-                                                ? 'text-[#22d3ee] opacity-60'
-                                                : 'text-[#44403c]'
+                                                ? 'text-[#22d3ee] opacity-80'
+                                                : 'text-[#78716c]'
                                         }`}>
                                             {status}
                                         </span>
-                                        <p className="text-[#3f3f46] text-xs leading-relaxed col-span-2">{note}</p>
+                                        <p className="text-[#71717a] text-xs leading-relaxed col-span-2">{note}</p>
                                     </motion.div>
                                 ))}
                             </div>
@@ -464,9 +470,9 @@ export default function PortfolioHome() {
                                     <motion.div key={institution} variants={fadeUp} className="flex flex-col gap-0.5">
                                         <div className="flex items-baseline justify-between gap-4">
                                             <span className="text-white text-sm">{institution}</span>
-                                            <span className="text-[#3f3f46] text-xs shrink-0">{period}</span>
+                                            <span className="text-[#52525b] text-xs shrink-0">{period}</span>
                                         </div>
-                                        <p className="text-[#52525b] text-xs">{degree}</p>
+                                        <p className="text-[#71717a] text-xs">{degree}</p>
                                     </motion.div>
                                 ))}
                             </div>
@@ -477,11 +483,45 @@ export default function PortfolioHome() {
                         {/* certifications */}
                         <Section>
                             <Label>{T.sCerts}</Label>
-                            <div className="grid sm:grid-cols-2 gap-x-8 gap-y-2">
-                                {certifications.map((cert) => (
-                                    <motion.div key={cert} variants={fadeUp} className="flex items-start gap-2.5">
-                                        <span className="text-[#22d3ee] opacity-40 shrink-0 mt-0.5">▸</span>
-                                        <span className="text-[#71717a] text-xs leading-relaxed">{cert}</span>
+                            <div className="flex flex-col">
+                                {certifications.map((cert, i) => (
+                                    <motion.div key={cert.name} variants={fadeUp} className="flex gap-3">
+                                        {/* date */}
+                                        <div className="shrink-0 w-18 text-right pt-0.5">
+                                            <span className="text-[#52525b] text-[10px] font-mono">
+                                                {cert.date ?? T.certNow}
+                                            </span>
+                                        </div>
+                                        {/* dot + vertical line */}
+                                        <div className="flex flex-col items-center shrink-0">
+                                            <div className={`w-1.5 h-1.5 rounded-full mt-1 shrink-0 ${
+                                                cert.status === 'progress' ? 'bg-[#22d3ee]' : 'bg-[#3f3f46]'
+                                            }`} />
+                                            {i < certifications.length - 1 && (
+                                                <div className="w-px flex-1 bg-[#1c1c1f] mt-1 min-h-5" />
+                                            )}
+                                        </div>
+                                        {/* content */}
+                                        <div className={`flex flex-col gap-0.5 ${i < certifications.length - 1 ? 'pb-4' : ''}`}>
+                                            {'href' in cert ? (
+                                                <a
+                                                    href={cert.href}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="text-[#a1a1aa] text-xs font-medium leading-snug hover:text-[#22d3ee] transition-colors"
+                                                >
+                                                    {cert.name}
+                                                </a>
+                                            ) : (
+                                                <span className="text-[#a1a1aa] text-xs font-medium leading-snug">{cert.name}</span>
+                                            )}
+                                            <span className="text-[#52525b] text-[10px]">{cert.institution}</span>
+                                            {cert.status === 'progress' && (
+                                                <span className="text-[#22d3ee] text-[10px] uppercase tracking-widest opacity-80 mt-0.5">
+                                                    {T.certStudying}
+                                                </span>
+                                            )}
+                                        </div>
                                     </motion.div>
                                 ))}
                             </div>
@@ -506,9 +546,9 @@ export default function PortfolioHome() {
                                             <span className="text-white text-sm group-hover:text-[#22d3ee] transition-colors font-medium">
                                                 {p.name}
                                             </span>
-                                            <span className="text-[#27272a] text-xs">/</span>
-                                            <span className="text-[#52525b] text-xs">{p.subtitle}</span>
-                                            <div className="ml-auto flex items-center gap-1.5 text-[#3f3f46] text-xs shrink-0">
+                                            <span className="text-[#52525b] text-xs">/</span>
+                                            <span className="text-[#71717a] text-xs">{p.subtitle}</span>
+                                            <div className="ml-auto flex items-center gap-1.5 text-[#52525b] text-xs shrink-0">
                                                 <span
                                                     className="inline-block w-2 h-2 rounded-full"
                                                     style={{ backgroundColor: langColors[p.lang] ?? '#555' }}
@@ -516,8 +556,8 @@ export default function PortfolioHome() {
                                                 {p.lang}
                                             </div>
                                         </div>
-                                        <p className="text-xs text-[#52525b] leading-relaxed">{p.description}</p>
-                                        <span className="text-[#27272a] text-xs group-hover:text-[#22d3ee] transition-colors">
+                                        <p className="text-xs text-[#a1a1aa] leading-relaxed">{p.description}</p>
+                                        <span className="text-[#52525b] text-xs group-hover:text-[#22d3ee] transition-colors">
                                             github.com/nickolss/{p.name} ↗
                                         </span>
                                     </motion.a>
@@ -526,7 +566,7 @@ export default function PortfolioHome() {
                         </Section>
 
                         {/* footer */}
-                        <div className="text-[#27272a] text-xs pt-4 border-t border-[#18181b]">
+                        <div className="text-[#3f3f46] text-xs pt-4 border-t border-[#18181b]">
                             {T.footer}
                         </div>
 
