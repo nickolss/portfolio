@@ -1,7 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
+
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 /* ─── i18n ───────────────────────────────────────────────────────────── */
 
@@ -26,25 +28,25 @@ const copy = {
         expLocation: 'são paulo, brasil',
         roles: [
             { title: 'Assistente de Dev. Sênior', period: 'jun 2026 → hoje' },
-            { title: 'Assistente de Dev. Júnior',  period: 'nov 2025 → jun 2026' },
-            { title: 'Estagiário',                 period: 'out 2025 → nov 2025' },
+            { title: 'Assistente de Dev. Júnior', period: 'nov 2025 → jun 2026' },
+            { title: 'Estagiário', period: 'out 2025 → nov 2025' },
         ],
         education: [
             { institution: 'FATEC Zona Leste', degree: 'Tecnólogo — Análise e Desenvolvimento de Sistemas', period: '2025 → 2026' },
-            { institution: 'ETEC Zona Leste',  degree: 'Técnico — Desenvolvimento de Sistemas',            period: '2022 → 2024' },
+            { institution: 'ETEC Zona Leste', degree: 'Técnico — Desenvolvimento de Sistemas', period: '2022 → 2024' },
         ],
         devopsFocus: [
-            { area: 'containers',      note: 'Docker images, builds multi-stage e stacks locais reproduzíveis.', status: 'ativo' },
-            { area: 'orquestração',    note: 'Fundamentos de Kubernetes — deployments, services, configmaps.', status: 'aprendendo' },
+            { area: 'containers', note: 'Docker images, builds multi-stage e stacks locais reproduzíveis.', status: 'ativo' },
+            { area: 'orquestração', note: 'Fundamentos de Kubernetes — deployments, services, configmaps.', status: 'aprendendo' },
             { area: 'observabilidade', note: 'Dashboards Grafana e playbooks Ansible para automação operacional.', status: 'ativo' },
         ],
         projects: [
-            { name: 'mirai',         subtitle: 'Plataforma de Avaliação TRL',     description: 'Avaliação de Nível de Maturidade Tecnológica para melhorar a governança e a qualidade das decisões em times de inovação.', href: 'https://github.com/nickolss/Mirai',         lang: 'TypeScript' },
-            { name: 'second-vision', subtitle: 'Dispositivo de Visão Assistida',  description: 'Microcomputador com câmera que detecta obstáculos em tempo real e dispara alertas via app mobile para deficientes visuais.', href: 'https://github.com/nickolss/Second-Vision',  lang: 'Python' },
-            { name: 'personal_rag',  subtitle: 'Assistente de IA e Produtividade',description: 'Assistente Python + Markdown para organizar contexto e melhorar produtividade com fluxos de recuperação de informação.', href: 'https://github.com/nickolss/personal_rag',    lang: 'Python' },
-            { name: 'front-hae',     subtitle: 'Frontend de Gestão Acadêmica',    description: 'Frontend TypeScript para operações da FATEC, parte do sistema end-to-end back-hae/front-hae.', href: 'https://github.com/nickolss/front-hae',     lang: 'TypeScript' },
-            { name: 'back-hae',      subtitle: 'Backend de Gestão Acadêmica',     description: 'Backend Java/Spring Boot para a FATEC com gestão completa de fluxos acadêmicos e API RESTful.', href: 'https://github.com/nickolss/back-hae',      lang: 'Java' },
-            { name: 'arch-wizard',   subtitle: 'Toolkit de Automação Linux',      description: 'Shell scripts e automação CLI para ambientes Linux demonstrando raciocínio de infraestrutura.', href: 'https://github.com/nickolss/ArchWizard',   lang: 'Shell' },
+            { name: 'mirai', subtitle: 'Plataforma de Avaliação TRL', description: 'Avaliação de Nível de Maturidade Tecnológica para melhorar a governança e a qualidade das decisões em times de inovação.', href: 'https://github.com/nickolss/Mirai', lang: 'TypeScript' },
+            { name: 'second-vision', subtitle: 'Dispositivo de Visão Assistida', description: 'Microcomputador com câmera que detecta obstáculos em tempo real e dispara alertas via app mobile para deficientes visuais.', href: 'https://github.com/nickolss/Second-Vision', lang: 'Python' },
+            { name: 'personal_rag', subtitle: 'Assistente de IA e Produtividade', description: 'Assistente Python + Markdown para organizar contexto e melhorar produtividade com fluxos de recuperação de informação.', href: 'https://github.com/nickolss/personal_rag', lang: 'Python' },
+            { name: 'front-hae', subtitle: 'Frontend de Gestão Acadêmica', description: 'Frontend TypeScript para operações da FATEC, parte do sistema end-to-end back-hae/front-hae.', href: 'https://github.com/nickolss/front-hae', lang: 'TypeScript' },
+            { name: 'back-hae', subtitle: 'Backend de Gestão Acadêmica', description: 'Backend Java/Spring Boot para a FATEC com gestão completa de fluxos acadêmicos e API RESTful.', href: 'https://github.com/nickolss/back-hae', lang: 'Java' },
+            { name: 'arch-wizard', subtitle: 'Toolkit de Automação Linux', description: 'Shell scripts e automação CLI para ambientes Linux demonstrando raciocínio de infraestrutura.', href: 'https://github.com/nickolss/ArchWizard', lang: 'Shell' },
         ],
         statusBlock: ['$UPTIME = ∞', '$MODE   = building', '$STATUS = working'],
         footer: '$ sair 0',
@@ -68,24 +70,24 @@ const copy = {
         roles: [
             { title: 'Senior Developer Assistant', period: 'jun 2026 → present' },
             { title: 'Junior Developer Assistant', period: 'nov 2025 → jun 2026' },
-            { title: 'Intern',                     period: 'oct 2025 → nov 2025' },
+            { title: 'Intern', period: 'oct 2025 → nov 2025' },
         ],
         education: [
             { institution: 'FATEC Zona Leste', degree: 'Technologist — Systems Analysis and Development', period: '2025 → 2026' },
-            { institution: 'ETEC Zona Leste',  degree: 'Technician — Systems Development',               period: '2022 → 2024' },
+            { institution: 'ETEC Zona Leste', degree: 'Technician — Systems Development', period: '2022 → 2024' },
         ],
         devopsFocus: [
-            { area: 'containers',    note: 'Docker images, multi-stage builds, and reproducible local stacks.', status: 'active' },
+            { area: 'containers', note: 'Docker images, multi-stage builds, and reproducible local stacks.', status: 'active' },
             { area: 'orchestration', note: 'Kubernetes fundamentals — deployments, services, configmaps, scaling.', status: 'learning' },
             { area: 'observability', note: 'Grafana dashboards for metrics and Ansible playbooks for automation.', status: 'active' },
         ],
         projects: [
-            { name: 'mirai',         subtitle: 'TRL Evaluation Platform',           description: 'Technology Readiness Level assessment improving project governance and decision quality for innovation teams.', href: 'https://github.com/nickolss/Mirai',         lang: 'TypeScript' },
-            { name: 'second-vision', subtitle: 'Assistive Vision Device (TCC)',     description: 'Microcomputer + camera system that detects obstacles in real time and triggers audio alerts via mobile app.', href: 'https://github.com/nickolss/Second-Vision',  lang: 'Python' },
-            { name: 'personal_rag',  subtitle: 'Generative AI Productivity Assistant', description: 'Python + Markdown assistant to organize context and improve productivity with retrieval-based workflows.', href: 'https://github.com/nickolss/personal_rag',    lang: 'Python' },
-            { name: 'front-hae',     subtitle: 'Academic Management Frontend',      description: 'TypeScript frontend for FATEC operations, part of the end-to-end back-hae/front-hae system.', href: 'https://github.com/nickolss/front-hae',     lang: 'TypeScript' },
-            { name: 'back-hae',      subtitle: 'Academic Management Backend',       description: 'Java/Spring Boot backend for FATEC combining complete academic workflow management with a clean RESTful API.', href: 'https://github.com/nickolss/back-hae',      lang: 'Java' },
-            { name: 'arch-wizard',   subtitle: 'Linux Automation Toolkit',          description: 'Shell scripts and CLI automation for Linux environments showcasing infrastructure thinking.', href: 'https://github.com/nickolss/ArchWizard',   lang: 'Shell' },
+            { name: 'mirai', subtitle: 'TRL Evaluation Platform', description: 'Technology Readiness Level assessment improving project governance and decision quality for innovation teams.', href: 'https://github.com/nickolss/Mirai', lang: 'TypeScript' },
+            { name: 'second-vision', subtitle: 'Assistive Vision Device (TCC)', description: 'Microcomputer + camera system that detects obstacles in real time and triggers audio alerts via mobile app.', href: 'https://github.com/nickolss/Second-Vision', lang: 'Python' },
+            { name: 'personal_rag', subtitle: 'Generative AI Productivity Assistant', description: 'Python + Markdown assistant to organize context and improve productivity with retrieval-based workflows.', href: 'https://github.com/nickolss/personal_rag', lang: 'Python' },
+            { name: 'front-hae', subtitle: 'Academic Management Frontend', description: 'TypeScript frontend for FATEC operations, part of the end-to-end back-hae/front-hae system.', href: 'https://github.com/nickolss/front-hae', lang: 'TypeScript' },
+            { name: 'back-hae', subtitle: 'Academic Management Backend', description: 'Java/Spring Boot backend for FATEC combining complete academic workflow management with a clean RESTful API.', href: 'https://github.com/nickolss/back-hae', lang: 'Java' },
+            { name: 'arch-wizard', subtitle: 'Linux Automation Toolkit', description: 'Shell scripts and CLI automation for Linux environments showcasing infrastructure thinking.', href: 'https://github.com/nickolss/ArchWizard', lang: 'Shell' },
         ],
         statusBlock: ['$UPTIME = ∞', '$MODE   = building', '$STATUS = open to work'],
         footer: '$ exit 0',
@@ -95,28 +97,28 @@ const copy = {
 /* ─── static data ────────────────────────────────────────────────────── */
 
 const skills = {
-    backend:   ['Java', 'Spring Boot', 'Golang', 'Gin', 'APIs RESTful', 'Architecture'],
-    frontend:  ['TypeScript', 'React', 'Next.js', 'Tailwind CSS', 'UI/UX'],
-    devops:    ['Docker', 'Kubernetes', 'Grafana', 'Ansible', 'Terraform', 'Datadog', 'Linux', 'Shell'],
+    backend: ['Java', 'Spring Boot', 'Golang', 'Gin', 'APIs RESTful', 'Architecture'],
+    frontend: ['TypeScript', 'React', 'Next.js', 'Tailwind CSS', 'UI/UX'],
+    devops: ['Docker', 'Kubernetes', 'Grafana', 'Ansible', 'Terraform', 'Datadog', 'Linux', 'Shell'],
     databases: ['PostgreSQL', 'MySQL', 'SAP Hana'],
 };
 
 const certifications = [
-    { name: 'Privacidade e Proteção de Dados (LGPD)', institution: 'Senai São Paulo',         date: 'ago 2022', status: 'done'     as const },
-    { name: 'Job Application Essentials',              institution: 'IBM',                      date: 'mar 2024', status: 'done'     as const },
-    { name: 'Introdução ao Hacking e Pentest 2.0',    institution: 'Solyd Offensive Security', date: 'ago 2024', status: 'done'     as const },
-    { name: 'Certificado de Publicação de Artigo',    institution: 'FATEC Zona Leste',         date: 'dez 2024', status: 'done'     as const },
-    { name: 'Cybersecurity',                           institution: 'FIAP',                     date: 'abr 2025', status: 'done'     as const },
-    { name: 'Golang do Zero ao Avançado',              institution: 'Udemy', href: 'https://www.udemy.com/course/golang-do-zero-ao-avancado/',          date: null, status: 'progress' as const },
-    { name: 'Kubernetes do Básico ao Avançado',        institution: 'Udemy', href: 'https://www.udemy.com/course/kubernetes-do-basico-ao-avancado/',    date: null, status: 'progress' as const },
+    { name: 'Privacidade e Proteção de Dados (LGPD)', institution: 'Senai São Paulo', date: 'ago 2022', status: 'done' as const },
+    { name: 'Job Application Essentials', institution: 'IBM', date: 'mar 2024', status: 'done' as const },
+    { name: 'Introdução ao Hacking e Pentest 2.0', institution: 'Solyd Offensive Security', date: 'ago 2024', status: 'done' as const },
+    { name: 'Certificado de Publicação de Artigo', institution: 'FATEC Zona Leste', date: 'dez 2024', status: 'done' as const },
+    { name: 'Cybersecurity', institution: 'FIAP', date: 'abr 2025', status: 'done' as const },
+    { name: 'Golang do Zero ao Avançado', institution: 'Udemy', href: 'https://www.udemy.com/course/golang-do-zero-ao-avancado/', date: null, status: 'progress' as const },
+    { name: 'Kubernetes do Básico ao Avançado', institution: 'Udemy', href: 'https://www.udemy.com/course/kubernetes-do-basico-ao-avancado/', date: null, status: 'progress' as const },
 ];
 
 const langColors: Record<string, string> = {
     TypeScript: '#3178c6',
-    Python:     '#3572a5',
-    Java:       '#b07219',
-    Shell:      '#89e051',
-    Golang:     '#00add8',
+    Python: '#3572a5',
+    Java: '#b07219',
+    Shell: '#89e051',
+    Golang: '#00add8',
 };
 
 /* ─── ASCII computer (sidebar compact version) ───────────────────────── */
@@ -125,18 +127,18 @@ const IW = 26;
 const IH = 7;
 
 const SCRIPT = [
-    { cmd: 'whoami',            outputs: ['  nickolas'] },
-    { cmd: 'cat role.txt',      outputs: ['  backend dev', '  devops mindset'] },
-    { cmd: 'ls skills/',        outputs: ['  java · go · ts · k8s'] },
+    { cmd: 'whoami', outputs: ['  nickolas'] },
+    { cmd: 'cat role.txt', outputs: ['  backend dev', '  devops mindset'] },
+    { cmd: 'ls skills/', outputs: ['  java · go · ts · k8s'] },
     { cmd: 'git log --oneline', outputs: ['  a3f1b2 feat: new api', '  9c4e21 fix: prod'] },
-    { cmd: 'docker ps',         outputs: ['  portfolio  running'] },
+    { cmd: 'docker ps', outputs: ['  portfolio  running'] },
 ];
 
 function buildFrame(rows: string[], cursor: string, blink: boolean): string {
     const pad = (s: string) => s.slice(0, IW).padEnd(IW);
-    const hr    = '─'.repeat(IW + 2);
-    const top   = '┌' + hr + '┐';
-    const bot   = '└' + hr + '┘';
+    const hr = '─'.repeat(IW + 2);
+    const top = '┌' + hr + '┐';
+    const bot = '└' + hr + '┘';
     const blank = '│ ' + ' '.repeat(IW) + ' │';
 
     const display = [...rows];
@@ -146,16 +148,16 @@ function buildFrame(rows: string[], cursor: string, blink: boolean): string {
     while (display.length < IH) display.push('');
 
     const inner = display.map(l => '│ ' + pad(l) + ' │');
-    const leg   = ' '.repeat(8) + '│' + ' '.repeat(IW - 10) + '│';
-    const base  = '═'.repeat(IW + 4);
+    const leg = ' '.repeat(8) + '│' + ' '.repeat(IW - 10) + '│';
+    const base = '═'.repeat(IW + 4);
 
     return [top, blank, ...inner, blank, bot, leg, base].join('\n');
 }
 
 function AsciiComputer() {
-    const [rows, setRows]     = useState<string[]>([]);
+    const [rows, setRows] = useState<string[]>([]);
     const [cursor, setCursor] = useState('');
-    const [blink, setBlink]   = useState(true);
+    const [blink, setBlink] = useState(true);
 
     useEffect(() => {
         const t = setInterval(() => setBlink(b => !b), 530);
@@ -253,12 +255,12 @@ function Rule() {
 
 const fadeUp = {
     hidden: { opacity: 0, y: 8 },
-    show:   { opacity: 1, y: 0, transition: { duration: 0.4 } },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
 
 const stagger = {
     hidden: {},
-    show:   { transition: { staggerChildren: 0.08 } },
+    show: { transition: { staggerChildren: 0.08 } },
 };
 
 function Section({ children }: { children: React.ReactNode }) {
@@ -277,10 +279,12 @@ function Section({ children }: { children: React.ReactNode }) {
 /* ─── main ───────────────────────────────────────────────────────────── */
 
 export default function PortfolioHome() {
-    const [lang, setLang] = useState<Lang>(() => {
-        if (typeof window === 'undefined') return 'pt';
-        return (window.localStorage.getItem('lang') as Lang) ?? 'pt';
-    });
+    const [lang, setLang] = useState<Lang>('pt');
+
+    useIsomorphicLayoutEffect(() => {
+        const stored = localStorage.getItem('lang') as Lang | null;
+        if (stored) setLang(stored);
+    }, []);
 
     useEffect(() => { window.localStorage.setItem('lang', lang); }, [lang]);
 
@@ -374,15 +378,15 @@ export default function PortfolioHome() {
 
                         {/* decorative bottom ASCII */}
                         <pre aria-hidden className="text-[10px] font-mono text-[#3f3f46] select-none leading-snug hidden lg:block">
-{`┌───────────────────┐
-│ ■ □ □  terminal   │
-├───────────────────┤
-│                   │
-│   > init(career)  │
-│   > commit --all  │
-│   > push origin   │
-│                   │
-└───────────────────┘`}
+                            {`┌───────────────────┐
+                              │ ■ □ □  terminal   │
+                              ├───────────────────┤
+                              │                   │
+                              │   > init(career)  │
+                              │   > commit --all  │
+                              │   > push origin   │
+                              │                   │
+                              └───────────────────┘`}
                         </pre>
                     </motion.aside>
 
@@ -417,9 +421,9 @@ export default function PortfolioHome() {
                             <div className="flex flex-col gap-3">
                                 {(
                                     [
-                                        { key: 'backend',   items: skills.backend },
-                                        { key: 'frontend',  items: skills.frontend },
-                                        { key: 'devops',    items: skills.devops },
+                                        { key: 'backend', items: skills.backend },
+                                        { key: 'frontend', items: skills.frontend },
+                                        { key: 'devops', items: skills.devops },
                                         { key: 'databases', items: skills.databases },
                                     ] as const
                                 ).map(({ key, items }) => (
@@ -447,11 +451,10 @@ export default function PortfolioHome() {
                                 {T.devopsFocus.map(({ area, note, status }) => (
                                     <motion.div key={area} variants={fadeUp} className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-1">
                                         <span className="text-[#a1a1aa] text-xs font-medium">{area}</span>
-                                        <span className={`text-[10px] uppercase tracking-widest text-right ${
-                                            status === 'ativo' || status === 'active'
-                                                ? 'text-[#22d3ee] opacity-80'
-                                                : 'text-[#78716c]'
-                                        }`}>
+                                        <span className={`text-[10px] uppercase tracking-widest text-right ${status === 'ativo' || status === 'active'
+                                            ? 'text-[#22d3ee] opacity-80'
+                                            : 'text-[#78716c]'
+                                            }`}>
                                             {status}
                                         </span>
                                         <p className="text-[#71717a] text-xs leading-relaxed col-span-2">{note}</p>
@@ -494,9 +497,8 @@ export default function PortfolioHome() {
                                         </div>
                                         {/* dot + vertical line */}
                                         <div className="flex flex-col items-center shrink-0">
-                                            <div className={`w-1.5 h-1.5 rounded-full mt-1 shrink-0 ${
-                                                cert.status === 'progress' ? 'bg-[#22d3ee]' : 'bg-[#3f3f46]'
-                                            }`} />
+                                            <div className={`w-1.5 h-1.5 rounded-full mt-1 shrink-0 ${cert.status === 'progress' ? 'bg-[#22d3ee]' : 'bg-[#3f3f46]'
+                                                }`} />
                                             {i < certifications.length - 1 && (
                                                 <div className="w-px flex-1 bg-[#1c1c1f] mt-1 min-h-5" />
                                             )}
