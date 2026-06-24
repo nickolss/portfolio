@@ -377,17 +377,15 @@ export default function PortfolioHome() {
                         </div>
 
                         {/* decorative bottom ASCII */}
-                        <pre aria-hidden className="text-[10px] font-mono text-[#3f3f46] select-none leading-snug hidden lg:block">
-                            {`┌───────────────────┐
-                              │ ■ □ □  terminal   │
-                              ├───────────────────┤
-                              │                   │
-                              │   > init(career)  │
-                              │   > commit --all  │
-                              │   > push origin   │
-                              │                   │
-                              └───────────────────┘`}
-                        </pre>
+                        <pre aria-hidden className="text-[10px] font-mono text-[#3f3f46] select-none leading-snug hidden lg:block">{`┌───────────────────┐
+│ ■ □ □  terminal   │
+├───────────────────┤
+│                   │
+│   > init(career)  │
+│   > commit --all  │
+│   > push origin   │
+│                   │
+└───────────────────┘`}</pre>
                     </motion.aside>
 
                     {/* ══ RIGHT MAIN CONTENT ═════════════════════════════ */}
