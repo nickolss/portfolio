@@ -109,7 +109,7 @@ const certifications = [
     { name: 'Introdução ao Hacking e Pentest 2.0', institution: 'Solyd Offensive Security', date: 'ago 2024', status: 'done' as const },
     { name: 'Certificado de Publicação de Artigo', institution: 'FATEC Zona Leste', date: 'dez 2024', status: 'done' as const },
     { name: 'Cybersecurity', institution: 'FIAP', date: 'abr 2025', status: 'done' as const },
-    { name: 'Golang do Zero ao Avançado', institution: 'Udemy', href: 'https://www.udemy.com/course/golang-do-zero-ao-avancado/', date: null, status: 'progress' as const },
+    { name: 'Golang do Zero ao Avançado', institution: 'Udemy', date: 'jun 2026', status: 'done' as const },
     { name: 'Kubernetes do Básico ao Avançado', institution: 'Udemy', href: 'https://www.udemy.com/course/kubernetes-do-basico-ao-avancado/', date: null, status: 'progress' as const },
 ];
 
