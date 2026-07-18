@@ -1,7 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { motion, MotionConfig } from 'framer-motion';
+import { useEffect, useLayoutEffect, useState, useSyncExternalStore } from 'react';
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
@@ -104,12 +104,12 @@ const skills = {
 };
 
 const certifications = [
-    { name: 'Privacidade e Proteção de Dados (LGPD)', institution: 'Senai São Paulo', date: 'ago 2022', status: 'done' as const },
-    { name: 'Job Application Essentials', institution: 'IBM', date: 'mar 2024', status: 'done' as const },
-    { name: 'Introdução ao Hacking e Pentest 2.0', institution: 'Solyd Offensive Security', date: 'ago 2024', status: 'done' as const },
-    { name: 'Certificado de Publicação de Artigo', institution: 'FATEC Zona Leste', date: 'dez 2024', status: 'done' as const },
-    { name: 'Cybersecurity', institution: 'FIAP', date: 'abr 2025', status: 'done' as const },
-    { name: 'Golang do Zero ao Avançado', institution: 'Udemy', date: 'jun 2026', status: 'done' as const },
+    { name: 'Privacidade e Proteção de Dados (LGPD)', institution: 'Senai São Paulo', date: { pt: 'ago 2022', en: 'aug 2022' }, status: 'done' as const },
+    { name: 'Job Application Essentials', institution: 'IBM', date: { pt: 'mar 2024', en: 'mar 2024' }, status: 'done' as const },
+    { name: 'Introdução ao Hacking e Pentest 2.0', institution: 'Solyd Offensive Security', date: { pt: 'ago 2024', en: 'aug 2024' }, status: 'done' as const },
+    { name: 'Certificado de Publicação de Artigo', institution: 'FATEC Zona Leste', date: { pt: 'dez 2024', en: 'dec 2024' }, status: 'done' as const },
+    { name: 'Cybersecurity', institution: 'FIAP', date: { pt: 'abr 2025', en: 'apr 2025' }, status: 'done' as const },
+    { name: 'Golang do Zero ao Avançado', institution: 'Udemy', date: { pt: 'jun 2026', en: 'jun 2026' }, status: 'done' as const },
     { name: 'Kubernetes do Básico ao Avançado', institution: 'Udemy', href: 'https://www.udemy.com/course/kubernetes-do-basico-ao-avancado/', date: null, status: 'progress' as const },
 ];
 
@@ -154,17 +154,42 @@ function buildFrame(rows: string[], cursor: string, blink: boolean): string {
     return [top, blank, ...inner, blank, bot, leg, base].join('\n');
 }
 
+const STATIC_ROWS = [
+    ' $ whoami',
+    '  nickolas',
+    ' $ cat role.txt',
+    '  backend dev',
+    '  devops mindset',
+];
+
+const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
+
+function subscribeReducedMotion(onChange: () => void) {
+    const mq = window.matchMedia(REDUCED_MOTION_QUERY);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+}
+
 function AsciiComputer() {
+    // snapshot de servidor `false` mantém a hidratação igual ao HTML do SSR;
+    // o frame estático só entra no re-render pós-hidratação
+    const reducedMotion = useSyncExternalStore(
+        subscribeReducedMotion,
+        () => window.matchMedia(REDUCED_MOTION_QUERY).matches,
+        () => false,
+    );
     const [rows, setRows] = useState<string[]>([]);
     const [cursor, setCursor] = useState('');
     const [blink, setBlink] = useState(true);
 
     useEffect(() => {
+        if (reducedMotion) return;
         const t = setInterval(() => setBlink(b => !b), 530);
         return () => clearInterval(t);
-    }, []);
+    }, [reducedMotion]);
 
     useEffect(() => {
+        if (reducedMotion) return;
         let dead = false;
         const sleep = (ms: number) =>
             new Promise<void>((res, rej) => setTimeout(() => (dead ? rej() : res()), ms));
@@ -204,11 +229,11 @@ function AsciiComputer() {
 
         run();
         return () => { dead = true; };
-    }, []);
+    }, [reducedMotion]);
 
     return (
         <pre aria-hidden className="font-mono text-[10.5px] leading-normal select-none text-[#3f3f46]">
-            {buildFrame(rows, cursor, blink)}
+            {reducedMotion ? buildFrame(STATIC_ROWS, '', false) : buildFrame(rows, cursor, blink)}
         </pre>
     );
 }
@@ -234,10 +259,10 @@ function SideRule({ side }: { side: 'left' | 'right' }) {
 
 function Label({ children }: { children: string }) {
     return (
-        <motion.p variants={fadeUp} className="text-[11px] uppercase tracking-[0.18em] mb-5">
-            <span className="text-[#22d3ee]">{'// '}</span>
-            <span className="text-[#71717a]">{children}</span>
-        </motion.p>
+        <motion.h2 variants={fadeUp} className="text-[11px] uppercase tracking-[0.18em] mb-5">
+            <span className="text-[#22d3ee]" aria-hidden>{'// '}</span>
+            <span className="text-[#8a8a93]">{children}</span>
+        </motion.h2>
     );
 }
 
@@ -253,9 +278,26 @@ function Rule() {
 
 /* ─── animation ──────────────────────────────────────────────────────── */
 
+const EASE_OUT_QUINT = [0.22, 1, 0.36, 1] as const;
+
 const fadeUp = {
     hidden: { opacity: 0, y: 8 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+    show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE_OUT_QUINT } },
+};
+
+const fadeLeft = {
+    hidden: { opacity: 0, x: -10 },
+    show: { opacity: 1, x: 0, transition: { duration: 0.45, ease: EASE_OUT_QUINT } },
+};
+
+const popIn = {
+    hidden: { opacity: 0, scale: 0 },
+    show: { opacity: 1, scale: 1, transition: { duration: 0.25, ease: EASE_OUT_QUINT } },
+};
+
+const drawDown = {
+    hidden: { scaleY: 0 },
+    show: { scaleY: 1, transition: { duration: 0.4, ease: EASE_OUT_QUINT } },
 };
 
 const stagger = {
@@ -286,11 +328,15 @@ export default function PortfolioHome() {
         if (stored) setLang(stored);
     }, []);
 
-    useEffect(() => { window.localStorage.setItem('lang', lang); }, [lang]);
+    useEffect(() => {
+        window.localStorage.setItem('lang', lang);
+        document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+    }, [lang]);
 
     const T = copy[lang];
 
     return (
+        <MotionConfig reducedMotion="user">
         <div className="min-h-screen bg-[#0c0c0e] text-[#a1a1aa] font-mono">
 
             {/* subtle vertical rails on very wide screens */}
@@ -303,14 +349,14 @@ export default function PortfolioHome() {
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="flex flex-wrap items-center justify-between gap-3 text-xs text-[#52525b] mb-14 pb-5 border-b border-[#18181b]"
+                    className="flex flex-wrap items-center justify-between gap-3 text-xs text-[#7a7a83] mb-14 pb-5 border-b border-[#18181b]"
                 >
-                    <span className="text-[#71717a]">
+                    <span className="text-[#8a8a93]">
                         <span className="text-[#22d3ee]">~</span>/{T.location}
                     </span>
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                        <a href="mailto:nickolasmaiaraujo@gmail.com" className="hover:text-[#22d3ee] transition-colors">
-                            nickolasmaiaraujo@gmail.com
+                        <a href="mailto:nickolasmaraujo@gmail.com" className="hover:text-[#22d3ee] transition-colors">
+                            nickolasmaraujo@gmail.com
                         </a>
                         <a href="https://linkedin.com/in/nickolas-maia" target="_blank" rel="noreferrer" className="hover:text-[#22d3ee] transition-colors">
                             linkedin ↗
@@ -322,8 +368,11 @@ export default function PortfolioHome() {
                             {(['pt', 'en'] as Lang[]).map((l, i) => (
                                 <span key={l} className="flex items-center gap-1">
                                     <button
+                                        type="button"
                                         onClick={() => setLang(l)}
-                                        className={`transition-colors ${lang === l ? 'text-[#22d3ee]' : 'text-[#3f3f46] hover:text-[#71717a]'}`}
+                                        aria-pressed={lang === l}
+                                        aria-label={l === 'pt' ? 'Português' : 'English'}
+                                        className={`transition-[color,transform] duration-150 active:scale-90 motion-reduce:active:scale-100 ${lang === l ? 'text-[#22d3ee]' : 'text-[#7a7a83] hover:text-[#a1a1aa]'}`}
                                     >
                                         {l.toUpperCase()}
                                     </button>
@@ -339,13 +388,13 @@ export default function PortfolioHome() {
 
                     {/* ══ LEFT SIDEBAR ═══════════════════════════════════ */}
                     <motion.aside
-                        initial={{ opacity: 0, x: -12 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.5, delay: 0.1 }}
+                        initial="hidden"
+                        animate="show"
+                        variants={{ hidden: {}, show: { transition: { delayChildren: 0.15, staggerChildren: 0.1 } } }}
                         className="lg:w-60 lg:shrink-0 lg:sticky lg:top-12 flex flex-col gap-7"
                     >
                         {/* name */}
-                        <div>
+                        <motion.div variants={fadeLeft}>
                             <div className="text-[10px] text-[#22d3ee] mb-2 tracking-widest uppercase">
                                 {'// dev'}
                             </div>
@@ -354,30 +403,36 @@ export default function PortfolioHome() {
                                 <br />
                                 <span className="text-[#22d3ee]">{T.h1[1]}</span>
                             </h1>
-                            <p className="text-[#71717a] text-xs mt-2">{T.tagline}</p>
-                        </div>
+                            <p className="text-[#8a8a93] text-xs mt-2">
+                                {T.tagline}
+                                <span className="cursor-blink text-[#22d3ee]" aria-hidden> █</span>
+                            </p>
+                        </motion.div>
 
                         {/* ASCII computer */}
-                        <AsciiComputer />
+                        <motion.div variants={fadeLeft}>
+                            <AsciiComputer />
+                        </motion.div>
 
                         {/* bio */}
-                        <p className="text-[#a1a1aa] text-xs leading-relaxed">
+                        <motion.p variants={fadeLeft} className="text-[#a1a1aa] text-[13px] leading-relaxed">
                             {T.bio}
-                        </p>
+                        </motion.p>
 
                         {/* status block */}
-                        <div className="border border-[#18181b] p-3">
+                        <motion.div variants={fadeLeft} className="border border-[#18181b] p-3">
                             <div className="text-[10px] text-[#22d3ee] mb-2 tracking-widest uppercase">{'// status'}</div>
                             {T.statusBlock.map((line) => (
-                                <div key={line} className="text-[11px] text-[#71717a] font-mono leading-relaxed">
-                                    <span className="text-[#52525b]">{line.split('=')[0]}=</span>
+                                <div key={line} className="text-[11px] text-[#8a8a93] font-mono leading-relaxed whitespace-pre">
+                                    <span className="text-[#7a7a83]">{line.split('=')[0]}=</span>
                                     <span className="text-[#a1a1aa]">{line.split('=')[1]}</span>
                                 </div>
                             ))}
-                        </div>
+                        </motion.div>
 
                         {/* decorative bottom ASCII */}
-                        <pre aria-hidden className="text-[10px] font-mono text-[#3f3f46] select-none leading-snug hidden lg:block">{`┌───────────────────┐
+                        <motion.div variants={fadeLeft} className="hidden lg:block">
+                            <pre aria-hidden className="text-[10px] font-mono text-[#3f3f46] select-none leading-snug">{`┌───────────────────┐
 │ ■ □ □  terminal   │
 ├───────────────────┤
 │                   │
@@ -386,6 +441,7 @@ export default function PortfolioHome() {
 │   > push origin   │
 │                   │
 └───────────────────┘`}</pre>
+                        </motion.div>
                     </motion.aside>
 
                     {/* ══ RIGHT MAIN CONTENT ═════════════════════════════ */}
@@ -397,14 +453,14 @@ export default function PortfolioHome() {
                             <motion.div variants={fadeUp} className="flex flex-col gap-4">
                                 <div className="flex items-baseline justify-between gap-4">
                                     <span className="text-white text-sm font-medium">Inpower Br</span>
-                                    <span className="text-[#3f3f46] text-xs shrink-0">{T.expTotal}</span>
+                                    <span className="text-[#7a7a83] text-xs shrink-0">{T.expTotal}</span>
                                 </div>
-                                <p className="text-[#52525b] text-xs -mt-2">{T.expLocation}</p>
+                                <p className="text-[#7a7a83] text-xs -mt-2">{T.expLocation}</p>
                                 <div className="flex flex-col gap-2.5 pl-3 border-l border-[#1c1c1f]">
                                     {T.roles.map(({ title, period }) => (
                                         <div key={title} className="flex items-baseline justify-between gap-4">
                                             <span className="text-[#a1a1aa] text-xs">{title}</span>
-                                            <span className="text-[#52525b] text-[11px] shrink-0">{period}</span>
+                                            <span className="text-[#7a7a83] text-[11px] shrink-0">{period}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -425,14 +481,14 @@ export default function PortfolioHome() {
                                         { key: 'databases', items: skills.databases },
                                     ] as const
                                 ).map(({ key, items }) => (
-                                    <motion.div key={key} variants={fadeUp} className="flex flex-wrap items-baseline gap-x-1 gap-y-1">
+                                    <motion.div key={key} variants={fadeLeft} className="flex flex-wrap items-baseline gap-x-1 gap-y-1">
                                         <span className="text-[#22d3ee] text-[10px] uppercase tracking-wider w-28 shrink-0 opacity-80">
                                             {T.skillLabels[key]}
                                         </span>
                                         {items.map((s, i) => (
                                             <span key={s}>
                                                 <span className="text-[#a1a1aa] hover:text-[#d4d4d8] transition-colors cursor-default text-xs">{s}</span>
-                                                {i < items.length - 1 && <span className="text-[#52525b] mx-1.5">·</span>}
+                                                {i < items.length - 1 && <span className="text-[#7a7a83] mx-1.5">·</span>}
                                             </span>
                                         ))}
                                     </motion.div>
@@ -451,11 +507,11 @@ export default function PortfolioHome() {
                                         <span className="text-[#a1a1aa] text-xs font-medium">{area}</span>
                                         <span className={`text-[10px] uppercase tracking-widest text-right ${status === 'ativo' || status === 'active'
                                             ? 'text-[#22d3ee] opacity-80'
-                                            : 'text-[#78716c]'
+                                            : 'text-[#8a8a93]'
                                             }`}>
                                             {status}
                                         </span>
-                                        <p className="text-[#71717a] text-xs leading-relaxed col-span-2">{note}</p>
+                                        <p className="text-[#8a8a93] text-xs leading-relaxed col-span-2">{note}</p>
                                     </motion.div>
                                 ))}
                             </div>
@@ -471,9 +527,9 @@ export default function PortfolioHome() {
                                     <motion.div key={institution} variants={fadeUp} className="flex flex-col gap-0.5">
                                         <div className="flex items-baseline justify-between gap-4">
                                             <span className="text-white text-sm">{institution}</span>
-                                            <span className="text-[#52525b] text-xs shrink-0">{period}</span>
+                                            <span className="text-[#7a7a83] text-xs shrink-0">{period}</span>
                                         </div>
-                                        <p className="text-[#71717a] text-xs">{degree}</p>
+                                        <p className="text-[#8a8a93] text-xs">{degree}</p>
                                     </motion.div>
                                 ))}
                             </div>
@@ -489,16 +545,16 @@ export default function PortfolioHome() {
                                     <motion.div key={cert.name} variants={fadeUp} className="flex gap-3">
                                         {/* date */}
                                         <div className="shrink-0 w-18 text-right pt-0.5">
-                                            <span className="text-[#52525b] text-[10px] font-mono">
-                                                {cert.date ?? T.certNow}
+                                            <span className="text-[#7a7a83] text-[10px] font-mono">
+                                                {cert.date ? cert.date[lang] : T.certNow}
                                             </span>
                                         </div>
                                         {/* dot + vertical line */}
                                         <div className="flex flex-col items-center shrink-0">
-                                            <div className={`w-1.5 h-1.5 rounded-full mt-1 shrink-0 ${cert.status === 'progress' ? 'bg-[#22d3ee]' : 'bg-[#3f3f46]'
+                                            <motion.div variants={popIn} className={`w-1.5 h-1.5 rounded-full mt-1 shrink-0 ${cert.status === 'progress' ? 'bg-[#22d3ee]' : 'bg-[#3f3f46]'
                                                 }`} />
                                             {i < certifications.length - 1 && (
-                                                <div className="w-px flex-1 bg-[#1c1c1f] mt-1 min-h-5" />
+                                                <motion.div variants={drawDown} className="w-px flex-1 origin-top bg-[#1c1c1f] mt-1 min-h-5" />
                                             )}
                                         </div>
                                         {/* content */}
@@ -515,7 +571,7 @@ export default function PortfolioHome() {
                                             ) : (
                                                 <span className="text-[#a1a1aa] text-xs font-medium leading-snug">{cert.name}</span>
                                             )}
-                                            <span className="text-[#52525b] text-[10px]">{cert.institution}</span>
+                                            <span className="text-[#7a7a83] text-[10px]">{cert.institution}</span>
                                             {cert.status === 'progress' && (
                                                 <span className="text-[#22d3ee] text-[10px] uppercase tracking-widest opacity-80 mt-0.5">
                                                     {T.certStudying}
@@ -537,6 +593,8 @@ export default function PortfolioHome() {
                                     <motion.a
                                         key={p.name}
                                         variants={fadeUp}
+                                        whileHover={{ x: 4 }}
+                                        transition={{ duration: 0.15, ease: 'easeOut' }}
                                         href={p.href}
                                         target="_blank"
                                         rel="noreferrer"
@@ -546,9 +604,9 @@ export default function PortfolioHome() {
                                             <span className="text-white text-sm group-hover:text-[#22d3ee] transition-colors font-medium">
                                                 {p.name}
                                             </span>
-                                            <span className="text-[#52525b] text-xs">/</span>
-                                            <span className="text-[#71717a] text-xs">{p.subtitle}</span>
-                                            <div className="ml-auto flex items-center gap-1.5 text-[#52525b] text-xs shrink-0">
+                                            <span className="text-[#7a7a83] text-xs">/</span>
+                                            <span className="text-[#8a8a93] text-xs">{p.subtitle}</span>
+                                            <div className="ml-auto flex items-center gap-1.5 text-[#7a7a83] text-xs shrink-0">
                                                 <span
                                                     className="inline-block w-2 h-2 rounded-full"
                                                     style={{ backgroundColor: langColors[p.lang] ?? '#555' }}
@@ -556,8 +614,8 @@ export default function PortfolioHome() {
                                                 {p.lang}
                                             </div>
                                         </div>
-                                        <p className="text-xs text-[#a1a1aa] leading-relaxed">{p.description}</p>
-                                        <span className="text-[#52525b] text-xs group-hover:text-[#22d3ee] transition-colors">
+                                        <p className="text-[13px] text-[#a1a1aa] leading-relaxed">{p.description}</p>
+                                        <span className="text-[#7a7a83] text-xs group-hover:text-[#22d3ee] transition-colors">
                                             github.com/nickolss/{p.name} ↗
                                         </span>
                                     </motion.a>
@@ -566,7 +624,7 @@ export default function PortfolioHome() {
                         </Section>
 
                         {/* footer */}
-                        <div className="text-[#3f3f46] text-xs pt-4 border-t border-[#18181b]">
+                        <div className="text-[#7a7a83] text-xs pt-4 border-t border-[#18181b]">
                             {T.footer}
                         </div>
 
@@ -574,5 +632,6 @@ export default function PortfolioHome() {
                 </div>
             </div>
         </div>
+        </MotionConfig>
     );
 }

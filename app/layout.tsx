@@ -1,13 +1,8 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -15,9 +10,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nickolas Maia de Araujo | Fullstack Developer & AI Enthusiast",
+  title: "Nickolas Maia | Backend Developer & DevOps",
   description:
-    "Portfolio of Nickolas Maia de Araujo (nickolss): Fullstack development, AI projects, and enterprise-ready software solutions.",
+    "Portfólio de Nickolas Maia de Araujo (nickolss): desenvolvimento backend com Java/Spring Boot e Golang, DevOps com Docker, Kubernetes e observabilidade.",
+  openGraph: {
+    title: "Nickolas Maia | Backend Developer & DevOps",
+    description:
+      "Backend developer — Java/Spring Boot, Golang/Gin, Docker, Kubernetes, PostgreSQL. São Paulo, Brasil.",
+    type: "website",
+    locale: "pt_BR",
+    alternateLocale: "en_US",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0c0c0e",
 };
 
 export default function RootLayout({
@@ -27,13 +34,13 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      lang="pt-BR"
+      className={`${geistMono.variable} h-full antialiased`}
     >
-      <Analytics />
-      <SpeedInsights />
       <body className="min-h-full flex flex-col">
         {children}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
